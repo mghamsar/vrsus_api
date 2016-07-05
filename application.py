@@ -32,7 +32,8 @@ def download():
 	s3 = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
 	v = s3.get_bucket('vrsuscovideos').get_key(videoname)
 
-	v.get_contents_to_filename(url+videoname)
+	v.get_contents_to_filename(videoname)
+	
 	return "done"+url+videoname
 
 
