@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_file
 from flask.ext.mysql import MySQL
 import boto
 import boto.s3.connection
@@ -15,7 +15,6 @@ application = app = Flask(__name__)
 
 s3_access_key = 'AKIAIJP6FY37QAB4C5VA'
 s3_secret_key = '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'
-#LOCAL_PATH = os.path.abspath(os.path.dirname(__file__))
 
 #"AKIAIJP6FY37QAB4C5VA","s85klsigZGf5cUr+IcoaZhwNULSSMN/uqRYltDbG"
 @app.route("/")
@@ -31,8 +30,14 @@ def download():
 	print videoname
 	s3 = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
 	v = s3.get_bucket('vrsuscovideos').get_key(videoname)
-
 	v.get_contents_to_filename(videoname)
+
+	LOCAL_PATH = os.path.abspath(os.path.dirname(__file__))
+
+	try:
+		return send_file(LOCAL_PATH+'/'+videoname, attachment_filename=videoname)
+	except Exception as e:
+		return str(e)
 	
 	return "done"+url+videoname
 
