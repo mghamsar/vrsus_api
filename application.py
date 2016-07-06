@@ -1,8 +1,10 @@
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, render_template, send_file, send_from_directory, make_response
+from flask import Response
 from flask.ext.mysql import MySQL
 import boto
 import boto.s3.connection
 import os
+import tempfile
 
 application = app = Flask(__name__)
 #mysql = MySQL()
@@ -26,20 +28,31 @@ def index():
 def download():
 	url = request.form['download_path']
 	videoname = request.form['video_name']
-	print url
-	print videoname
 	s3 = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
 	v = s3.get_bucket('vrsuscovideos').get_key(videoname)
 	v.get_contents_to_filename(videoname)
 
-	LOCAL_PATH = os.path.abspath(os.path.dirname(__file__))
-
-	try:
-		return send_file(LOCAL_PATH+'/'+videoname, attachment_filename=videoname)
-	except Exception as e:
-		return str(e)
+	if v: 
+		tempfilename = tempfile.mktemp(prefix='tmp_%s_%s' % ('o', videoname), dir=os.path.abspath(os.path.dirname(__file__)))
+		filetype = v.get_file(open(tempfilename, "w"))
+		cachefilename = "cache_"+videoname
+		os.rename(tempfilename, cachefilename)
 	
-	#return "done"+url+videoname
+		LOCAL_PATH = os.path.abspath(os.path.dirname(__file__))
+		print "Server Path: "+ LOCAL_PATH + "----video name: " + videoname
+
+		
+		with open(videoname, 'rb') as f:
+			body = f.read()
+			print body
+			response = make_response(body)
+			response.headers['Content-Description'] = 'File Transfer'
+			response.headers['Cache-Control'] = 'no-cache'
+			response.headers['Content-Type'] = 'application/octet-stream'
+			response.headers['Content-Disposition'] = 'attachment; filename=%s' % videoname
+			#response.headers['X-Accel-Redirect'] = server_path
+
+		return response
 
 
 #@app.route("/video/<videoname>", methods=['GET'])
