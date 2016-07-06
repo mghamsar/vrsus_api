@@ -40,11 +40,9 @@ def download():
 	
 		LOCAL_PATH = os.path.abspath(os.path.dirname(__file__))
 		print "Server Path: "+ LOCAL_PATH + "----video name: " + videoname
-
 		
 		with open(videoname, 'rb') as f:
 			body = f.read()
-			print body
 			response = make_response(body)
 			response.headers['Content-Description'] = 'File Transfer'
 			response.headers['Cache-Control'] = 'no-cache'
@@ -55,13 +53,23 @@ def download():
 		return response
 
 
-#@app.route("/video/<videoname>", methods=['GET'])
-#def get_video(videoname):
-#	s3 = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
-#	bucket = s3.get_bucket('vrsuscovideos').get_key(videoname)
-#	bucket.get_contents_to_filename(videoname)
-	
-#	return "bucket"
+@app.route("/video/<videoname>", methods=['GET'])
+def get_video(videoname):
+	s3 = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
+	v = s3.get_bucket('vrsuscovideos').get_key(videoname)
+	v.get_contents_to_filename(videoname)
+
+	if v:
+		with open(videoname, 'rb') as f:
+			body = f.read()
+			response = make_response(body)
+			response.headers['Content-Description'] = 'File Transfer'
+			response.headers['Cache-Control'] = 'no-cache'
+			response.headers['Content-Type'] = 'application/octet-stream'
+			response.headers['Content-Disposition'] = 'attachment; filename=%s' % videoname
+			#response.headers['X-Accel-Redirect'] = server_path
+
+		return response
 
 #@app.route("/Authenticate")
 #def Authenticate():
