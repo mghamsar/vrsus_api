@@ -11,13 +11,8 @@ import tempfile
 from decimal import Decimal
 
 application = app = Flask(__name__)
+app.config.from_object('config')
 mysql = MySQL()
-
-app.config['MYSQL_DATABASE_USER'] = 'mghamsar'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'AminMandana%1362'
-app.config['MYSQL_DATABASE_DB'] = 'vrsus'
-app.config['MYSQL_DATABASE_PORT'] = 3306
-app.config['MYSQL_DATABASE_HOST'] = 'vrsus.c7e2fotesw6y.us-east-1.rds.amazonaws.com'
 
 mysql.init_app(app)
 
