@@ -50,7 +50,9 @@ def get_video(videoname):
 			response.headers['Cache-Control'] = 'no-cache'
 			#response.headers['Content-Type'] = 'application/octet-stream'
 			response.headers['Content-Type'] = 'video/mp4'
-			#response.headers['Content-Disposition'] = 'attachment; filename=%s' % videoname
+			response.headers['Accept-Ranges'] = 'bytes'
+			#response.headers['Content-Disposition'] = 'attachment; filename=%s' %videoname
+			response.headers['Content-Disposition'] = 'inline; filename=%s' %videoname
 			#response.headers['X-Accel-Redirect'] = server_path
 
 		return response
