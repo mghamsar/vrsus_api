@@ -9,11 +9,12 @@ import boto.s3.connection
 import os
 import tempfile
 from decimal import Decimal
+import Image
+import StringIO
 
 application = app = Flask(__name__)
 app.config.from_object('config')
 mysql = MySQL()
-
 mysql.init_app(app)
 
 s3_access_key = 'AKIAIJP6FY37QAB4C5VA'
@@ -27,82 +28,100 @@ class fakefloat(float):
 
 @app.route("/")
 def index():
-	return render_template('basic.html')
-
+    return render_template('basic.html')
 
 @app.route('/download', methods=['POST'])
 def download():
-	videoname = request.form['video_name']
-	return get_video(videoname)
-
+    videoname = request.form['video_name']
+    return get_video(videoname)
 
 @app.route("/video/<videoname>", methods=['GET'])
 def get_video(videoname):
-	s3 = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
-	v = s3.get_bucket('vrsuscovideos').get_key(videoname)
-	v.get_contents_to_filename(videoname)
+    s3 = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
+    bucket = s3.get_bucket('vrsuscovideos')#.get_key(videoname)
+    key = boto.s3.key.Key(bucket)
+    key.key = videoname 
 
-	if v:
-		with open(videoname, 'rb') as f:
-			body = f.read()
-			response = make_response(body)
-			response.headers['Content-Description'] = 'File Transfer'
-			response.headers['Cache-Control'] = 'no-cache'
-			#response.headers['Content-Type'] = 'application/octet-stream'
-			response.headers['Content-Type'] = 'video/mp4'
-			response.headers['Accept-Ranges'] = 'bytes'
-			#response.headers['Content-Disposition'] = 'attachment; filename=%s' %videoname
-			response.headers['Content-Disposition'] = 'inline; filename=%s' %videoname
-			#response.headers['X-Accel-Redirect'] = server_path
+    try:
+        key.open_read()
+        headers = dict(key.resp.getheaders())
+        headers['content-type'] = 'video/mp4'
+        headers['accept-ranges'] = 'bytes'
+        #headers['access-control-allow-origin'] = '*'
+        headers['content-disposition'] = 'inline; filename=%s' %videoname
 
-		return response
+        #print headers
+        #if v:
+        #    with open(videoname, 'rb') as f:
+        #        body = f.read()
+        #        response = make_response(body)
+        #        response.headers['Content-Description'] = 'File Transfer'
+        #        response.headers['Cache-Control'] = 'no-cache'
+        #        response.headers['Content-Type'] = 'video/mp4'
+        #        response.headers['Accept-Ranges'] = 'bytes'
+        #        response.headers['Access-Control-Allow-Origin'] = '*'
+        #        response.headers['Content-Disposition'] = 'inline; filename=%s' %videoname
+        #    return response
+        return Response(key, headers=headers)
+
+    except boto.exception.S3ResponseError as e:
+        return Response(e.body, status=e.status, headers=key.resp.getheaders())
+        
 
 @app.route("/venues/<venuename>")
 def get_venue(venuename):
-	#username = request.args.get('UserName')
-	#password = request.args.get('Password')
 
-	def date_handler(obj):
-	    if hasattr(obj, 'isoformat'):
-	        return obj.isoformat()
-	    else:
-	        raise TypeError
+    def date_handler(obj):
+        if hasattr(obj, 'isoformat'):
+            return obj.isoformat()
+        else:
+            raise TypeError
+
+    def defaultencode(o):
+        if isinstance(o, Decimal):
+            # Subclass float with custom repr?
+            return fakefloat(o)
+        raise TypeError(repr(o) + " is not JSON serializable")
+
+    cursor = mysql.connect().cursor()
+    cursor.execute("SELECT * from venues where name='" + venuename + "'")
+    data = cursor.fetchall()
+
+    results = {}
+    for row, values in enumerate(data):
+        results = {'id':values[0], 'venuename':values[1],
+           'image':values[2],
+           'lat':values[3],
+           'long':values[4],
+           'date_added':date_handler(values[5]),
+           'date_updated':date_handler(values[6])
+        }
+
+    if results is None:
+        return "Venue name did not return any results"
+    else:
+        return jsonify(data=results)
 
 
-	def defaultencode(o):
-	    if isinstance(o, Decimal):
-	        # Subclass float with custom repr?
-	        return fakefloat(o)
-	    raise TypeError(repr(o) + " is not JSON serializable")
+@app.route('/images/<imagename>')
+def get_image(imagename):
+    conn = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
+    bucket = conn.get_bucket('vrsusimages', validate=False)
+    key = boto.s3.key.Key(bucket)
+    key.key = imagename 
 
-	cursor = mysql.connect().cursor()
-	cursor.execute("SELECT * from venues where name='" + venuename + "'")
-	data = cursor.fetchall()
+    try:
+        key.open_read()
+        headers = dict(key.resp.getheaders())
+        return Response(key, headers=headers)
+    except boto.exception.S3ResponseError as e:
+        return Response(e.body, status=e.status, headers=key.resp.getheaders())
 
-	results = {}
-	for row, values in enumerate(data):
-		print row, values
-
-		results = {'id':values[0], 'venuename':values[1],
-		   'lat':values[3],
-		   'long':values[4],
-		   'date_added':date_handler(values[5]),
-		   'date_updated':date_handler(values[6])
-		}
-
-	r = results
-	print r
-
-	if results is None:
-		return "Venue name did not return any results"
-	else:
-		return json.dumps(results,default=defaultencode)
-		#jsonify(data=r)
 
 #################---------------------###################
 
 if __name__=="__main__":
-	application.debug = True
-	application.run()
+    application.debug = True
+    application.run()
 
 
