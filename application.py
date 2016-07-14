@@ -8,7 +8,6 @@ import json
 import os
 import tempfile
 from decimal import Decimal
-import Image
 import StringIO
 
 application = app = Flask(__name__)
@@ -87,19 +86,19 @@ def get_venue(venuename):
         return jsonify(data=results)
 
 
-# @app.route('/images/<imagename>', methods=['GET'])
-# def get_image(imagename):
-#     conn = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
-#     bucket = conn.get_bucket('vrsusimages', validate=False)
-#     key = boto.s3.key.Key(bucket)
-#     key.key = imagename 
+@app.route('/images/<imagename>', methods=['GET'])
+def get_image(imagename):
+    conn = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
+    bucket = conn.get_bucket('vrsusimages', validate=False)
+    key = boto.s3.key.Key(bucket)
+    key.key = imagename 
 
-#     try:
-#         key.open_read()
-#         headers = dict(key.resp.getheaders())
-#         return Response(key, headers=headers)
-#     except boto.exception.S3ResponseError as e:
-#         return Response(e.body, status=e.status, headers=key.resp.getheaders())
+    try:
+        key.open_read()
+        headers = dict(key.resp.getheaders())
+        return Response(key, headers=headers)
+    except boto.exception.S3ResponseError as e:
+        return Response(e.body, status=e.status, headers=key.resp.getheaders())
 
 #################---------------------###################
 
