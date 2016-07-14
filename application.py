@@ -34,37 +34,39 @@ def download():
     videoname = request.form['video_name']
     return get_video(videoname)
 
-# @app.route("/video/<videoname>", methods=['GET'])
-# def get_video(videoname):
-#     s3 = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
-#     bucket = s3.get_bucket('vrsuscovideos')
-#     #key = bucket.get_key(videoname)
-#     key = boto.s3.key.Key(bucket)
-#     key.key = videoname 
+@app.route("/video/<videoname>", methods=['GET'])
+def get_video(videoname):
+    s3 = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
+    bucket = s3.get_bucket('vrsuscovideos')
+    #key = bucket.get_key(videoname)
+    key = boto.s3.key.Key(bucket)
+    key.key = videoname
 
-#     try:
-#         key.open_read()
-#         headers = dict(key.resp.getheaders())
-#         headers['content-type'] = 'video/mp4'
-#         headers['accept-ranges'] = 'bytes'
-#     #    headers['access-control-allow-origin'] = '*'
-#         headers['content-disposition'] = 'inline; filename=%s' %videoname
+    try:
+        body = key.open_read()
+        headers = dict(key.resp.getheaders())
+        
+        #headers['content-type'] = 'video/mp4'
+        #print headers
+        #headers['accept-ranges'] = 'bytes'
+        #headers['access-control-allow-origin'] = '*'
+        #headers['content-disposition'] = 'inline; filename=%s' %videoname
 
-#     #if bucket:
-#     #    with open(videoname, 'rb') as f:
-#     #        body = f.read()
-#     #        response = make_response(body)
-#     #        response.headers['Content-Description'] = 'File Transfer'
-#     #        response.headers['Cache-Control'] = 'no-cache'
-#     #        response.headers['Content-Type'] = 'video/mp4'
-#     #        response.headers['Accept-Ranges'] = 'bytes'
-#     #        response.headers['Access-Control-Allow-Origin'] = '*'
-#     #        response.headers['Content-Disposition'] = 'inline; filename=%s' %videoname
-#     #    return response
-#         return Response(key, headers=headers)
+        #if key:        
+        #    with open(videoname, 'rb') as f:
+        #        body = f.read()
+        #response = make_response(body)
+    #        response.headers['Content-Description'] = 'File Transfer'
+    #        response.headers['Cache-Control'] = 'no-cache'
+    #        response.headers['Content-Type'] = 'video/mp4'
+    #        response.headers['Accept-Ranges'] = 'bytes'
+    #        response.headers['Access-Control-Allow-Origin'] = '*'
+    #        response.headers['Content-Disposition'] = 'inline; filename=%s' %videoname
+        #return response
+        return Response(key, headers=headers)
 
-#     except boto.exception.S3ResponseError as e:
-#         return Response(e.body, status=e.status, headers=key.resp.getheaders())
+    except boto.exception.S3ResponseError as e:
+        return Response(e.body, status=e.status, headers=key.resp.getheaders())
         
 
 @app.route("/venues/<venuename>")
