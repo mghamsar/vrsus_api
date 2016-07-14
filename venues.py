@@ -49,8 +49,8 @@ class Venues:
             for row, values in enumerate(data):
                 results = {'id':values[0], 'venuename':values[1],
                    'image':values[2],
-                   'lat':values[3],
-                   'long':values[4],
+                   'lat':str(values[3]),
+                   'long':str(values[4]),
                    'date_added':self.date_handler(values[5]),
                    'date_updated':self.date_handler(values[6])
                 }
