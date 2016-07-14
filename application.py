@@ -40,18 +40,6 @@ def get_video(videoname):
     bucket = s3.get_bucket('vrsuscovideos')
     key = bucket.get_key(videoname)
     key.get_contents_to_filename(videoname)
-    #key = boto.s3.key.Key(bucket)
-    #key.key = videoname
-
-    #try:
-    #    body = key.open_read()
-    #    headers = dict(key.resp.getheaders())
-        
-        #headers['content-type'] = 'video/mp4'
-        #print headers
-        #headers['accept-ranges'] = 'bytes'
-        #headers['access-control-allow-origin'] = '*'
-        #headers['content-disposition'] = 'inline; filename=%s' %videoname
 
     if key:        
         with open(videoname, 'rb') as f:
@@ -63,12 +51,7 @@ def get_video(videoname):
             response.headers['Accept-Ranges'] = 'bytes'
             response.headers['Access-Control-Allow-Origin'] = '*'
             response.headers['Content-Disposition'] = 'inline; filename=%s' %videoname
-        return response
-        #return Response(key, headers=headers)
-
-   # except boto.exception.S3ResponseError as e:
-    #    return Response(e.body, status=e.status, headers=key.resp.getheaders())
-        
+        return response       
 
 @app.route("/venues/<venuename>")
 def get_venue(venuename):
