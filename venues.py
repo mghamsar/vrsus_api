@@ -1,6 +1,6 @@
 import MySQLdb
-from flask import jsonify, Response
 import boto, boto.s3.connection
+from flask import jsonify, Response
 from config import Config
 
 
