@@ -14,10 +14,10 @@ class Venues:
             else:
                 raise TypeError
 
-    # def defaultencode(self,o):
-    #         if isinstance(o, Decimal):
-    #             return fakefloat(o)
-    #         raise TypeError(repr(o) + " is not JSON serializable")
+    def defaultencode(self,o):
+        if isinstance(o, Decimal):
+            return fakefloat(o)
+        raise TypeError(repr(o) + " is not JSON serializable")
 
     def getImage(self, imagename):
         conn = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)

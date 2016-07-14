@@ -8,9 +8,18 @@ import os
 import tempfile
 from decimal import Decimal
 import venues
+import decimal
+import flask.json
 
 application = app = Flask(__name__)
 app.config.from_object('config.Config')
+app.json_encoder = JSONEncoder
+
+class JSONEncoder(flask.json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal):
+            return str(obj)
+        return super(MyJSONEncoder, self).default(obj)
 
 @app.route("/")
 def index():
