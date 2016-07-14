@@ -8,7 +8,6 @@ import json
 import os
 import tempfile
 from decimal import Decimal
-import StringIO
 
 application = app = Flask(__name__)
 app.config.from_object('config')
