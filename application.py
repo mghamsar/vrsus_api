@@ -3,9 +3,8 @@ from flask import Response, jsonify
 from flask.json import JSONEncoder
 from flask.ext.mysql import MySQL
 from datetime import datetime
-import boto
+import boto, boto.s3.connection
 import json
-import boto.s3.connection
 import os
 import tempfile
 from decimal import Decimal
@@ -38,7 +37,8 @@ def download():
 @app.route("/video/<videoname>", methods=['GET'])
 def get_video(videoname):
     s3 = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
-    bucket = s3.get_bucket('vrsuscovideos')#.get_key(videoname)
+    bucket = s3.get_bucket('vrsuscovideos')
+    #key = bucket.get_key(videoname)
     key = boto.s3.key.Key(bucket)
     key.key = videoname 
 
@@ -47,21 +47,20 @@ def get_video(videoname):
         headers = dict(key.resp.getheaders())
         headers['content-type'] = 'video/mp4'
         headers['accept-ranges'] = 'bytes'
-        #headers['access-control-allow-origin'] = '*'
+    #    headers['access-control-allow-origin'] = '*'
         headers['content-disposition'] = 'inline; filename=%s' %videoname
 
-        #print headers
-        #if v:
-        #    with open(videoname, 'rb') as f:
-        #        body = f.read()
-        #        response = make_response(body)
-        #        response.headers['Content-Description'] = 'File Transfer'
-        #        response.headers['Cache-Control'] = 'no-cache'
-        #        response.headers['Content-Type'] = 'video/mp4'
-        #        response.headers['Accept-Ranges'] = 'bytes'
-        #        response.headers['Access-Control-Allow-Origin'] = '*'
-        #        response.headers['Content-Disposition'] = 'inline; filename=%s' %videoname
-        #    return response
+    #if bucket:
+    #    with open(videoname, 'rb') as f:
+    #        body = f.read()
+    #        response = make_response(body)
+    #        response.headers['Content-Description'] = 'File Transfer'
+    #        response.headers['Cache-Control'] = 'no-cache'
+    #        response.headers['Content-Type'] = 'video/mp4'
+    #        response.headers['Accept-Ranges'] = 'bytes'
+    #        response.headers['Access-Control-Allow-Origin'] = '*'
+    #        response.headers['Content-Disposition'] = 'inline; filename=%s' %videoname
+    #    return response
         return Response(key, headers=headers)
 
     except boto.exception.S3ResponseError as e:
@@ -79,7 +78,6 @@ def get_venue(venuename):
 
     def defaultencode(o):
         if isinstance(o, Decimal):
-            # Subclass float with custom repr?
             return fakefloat(o)
         raise TypeError(repr(o) + " is not JSON serializable")
 
@@ -103,7 +101,7 @@ def get_venue(venuename):
         return jsonify(data=results)
 
 
-@app.route('/images/<imagename>')
+@app.route('/images/<imagename>', methods=['GET'])
 def get_image(imagename):
     conn = boto.connect_s3(aws_access_key_id = s3_access_key, aws_secret_access_key = s3_secret_key)
     bucket = conn.get_bucket('vrsusimages', validate=False)
@@ -116,7 +114,6 @@ def get_image(imagename):
         return Response(key, headers=headers)
     except boto.exception.S3ResponseError as e:
         return Response(e.body, status=e.status, headers=key.resp.getheaders())
-
 
 #################---------------------###################
 
