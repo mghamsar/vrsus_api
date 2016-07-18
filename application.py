@@ -35,34 +35,34 @@ def download():
 #################-------------------------###################
 
 
-@app.route("/videos/", methods=['GET'])
-def get_videos():
-    v = videos.Videos()
-    return v.getVideos()
+# @app.route("/videos/", methods=['GET'])
+# def get_videos():
+#     v = videos.Videos()
+#     return v.getVideos()
 
-@app.route("/videos/load/<videoname>", methods=['GET'])
-def get_video(videoname):
-    v = videos.Videos()
-    return v.getVideo(videoname)
+# @app.route("/videos/load/<videoname>", methods=['GET'])
+# def get_video(videoname):
+#     v = videos.Videos()
+#     return v.getVideo(videoname)
 
-@app.route("/venues/<venuename>")
-def get_venue(venuename):
-    venue = venues.Venues()
-    return venue.getInfo(venuename)
-
-
-#################-------------------------###################
+# @app.route("/venues/<venuename>")
+# def get_venue(venuename):
+#     venue = venues.Venues()
+#     return venue.getInfo(venuename)
 
 
-@app.route("/images/", methods=['GET'])
-def get_images():
-    img = images.Images()
-    return img.getImageNames()
+# #################-------------------------###################
 
-@app.route('/images/load/<imagename>', methods=['GET'])
-def load_image(imagename):
-    img = images.Images()
-    return img.loadImage(imagename)
+
+# @app.route("/images/", methods=['GET'])
+# def get_images():
+#     img = images.Images()
+#     return img.getImageNames()
+
+# @app.route('/images/load/<imagename>', methods=['GET'])
+# def load_image(imagename):
+#     img = images.Images()
+#     return img.loadImage(imagename)
     
 #################---------------------###################
 
