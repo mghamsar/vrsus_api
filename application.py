@@ -41,9 +41,9 @@ def download():
 #     return v.getVideos()
 
 # @app.route("/videos/load/<videoname>", methods=['GET'])
-# def get_video(videoname):
-#     v = videos.Videos()
-#     return v.getVideo(videoname)
+def get_video(videoname):
+    v = videos.Videos()
+    return v.getVideo(videoname)
 
 # @app.route("/venues/<venuename>")
 # def get_venue(venuename):
