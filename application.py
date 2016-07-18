@@ -35,20 +35,20 @@ def download():
 #################-------------------------###################
 
 
-# @app.route("/videos/", methods=['GET'])
-# def get_videos():
-#     v = videos.Videos()
-#     return v.getVideos()
+@app.route("/videos/", methods=['GET'])
+def get_videos():
+    v = videos.Videos()
+    return v.getVideos()
 
-# @app.route("/videos/load/<videoname>", methods=['GET'])
+@app.route("/videos/load/<videoname>", methods=['GET'])
 def get_video(videoname):
     v = videos.Videos()
     return v.getVideo(videoname)
 
-# @app.route("/venues/<venuename>")
-# def get_venue(venuename):
-#     venue = venues.Venues()
-#     return venue.getInfo(venuename)
+@app.route("/venues/<venuename>")
+def get_venue(venuename):
+    venue = venues.Venues()
+    return venue.getInfo(venuename)
 
 
 # #################-------------------------###################
