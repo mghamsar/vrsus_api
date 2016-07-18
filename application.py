@@ -34,7 +34,6 @@ def download():
 
 #################-------------------------###################
 
-
 @app.route("/videos/", methods=['GET'])
 def get_videos():
     v = videos.Videos()
@@ -50,19 +49,17 @@ def get_venue(venuename):
     venue = venues.Venues()
     return venue.getInfo(venuename)
 
+##################-------------------------###################
 
-# #################-------------------------###################
+@app.route("/images/", methods=['GET'])
+def get_images():
+    img = images.Images()
+    return img.getImageNames()
 
-
-# @app.route("/images/", methods=['GET'])
-# def get_images():
-#     img = images.Images()
-#     return img.getImageNames()
-
-# @app.route('/images/load/<imagename>', methods=['GET'])
-# def load_image(imagename):
-#     img = images.Images()
-#     return img.loadImage(imagename)
+@app.route('/images/load/<imagename>', methods=['GET'])
+def load_image(imagename):
+    img = images.Images()
+    return img.loadImage(imagename)
     
 #################---------------------###################
 
