@@ -8,6 +8,7 @@ import os
 import tempfile
 from decimal import Decimal
 import venues
+import videos
 import decimal
 import flask.json
 
@@ -30,16 +31,24 @@ def download():
     videoname = request.form['video_name']
     return get_video(videoname)
 
-@app.route("/video/<videoname>", methods=['GET'])
+#################-------------------------###################
+
+
+
+@app.route("/videos/", methods=['GET'])
+def get_videos():
+    v = videos.Videos();
+    return v.getVideos();
+
+@app.route("/videos/<videoname>", methods=['GET'])
 def get_video(videoname):
-    venue = venues.Venues();
-    return venue.getVideo(videoname) 
+    v = videos.Videos();
+    return v.getVideo(videoname)
 
 @app.route("/venues/<venuename>")
 def get_venue(venuename):
     venue = venues.Venues();
     return venue.getInfo(venuename)
-    
 
 @app.route('/images/<imagename>', methods=['GET'])
 def get_image(imagename):
