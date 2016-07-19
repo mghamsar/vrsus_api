@@ -1,6 +1,8 @@
 import MySQLdb
+import os, time
 import boto, boto.s3.connection
-from flask import jsonify, request, Response
+from boto.s3.key import Key
+from flask import jsonify, url_for, request, redirect, Response,render_template
 from config import Config
 
 class Videos:
@@ -39,6 +41,76 @@ class Videos:
         except boto.exception.S3ResponseError as e:
             return Response(e.body, status=e.status, headers=key.resp.getheaders())   
 
+    def addVideo(self,filename,data_file):
+        s3 = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
+        bucket = s3.get_bucket('vrsuscovideos')
+        k = Key(bucket)
+
+        # Loop over the list of files from the HTML input control
+        data_files = request.files.getlist('file[]')
+        for data_file in data_files:
+
+            try:
+                size = os.fstat(data_file.fileno()).st_size
+            except:
+                # Not all file objects implement fileno(),
+                # so we fall back on this
+                file.seek(0, os.SEEK_END)
+                size = data_file.tell()
+
+            # Read the contents of the file
+            file_contents = data_file.read()
+
+            # Use Boto to upload the file to the S3 bucket
+            #k.key = data_file.filename
+            k.key = filename
+            print "Uploading some data to bucket with key: " + k.key
+            sent = k.set_contents_from_string(file_contents)
+
+            if sent == size:
+                #self.addVideoToDb(filename)
+                now = time.strftime('%Y-%m-%d')
+                query = "INSERT INTO videos(id,name,date_added,date_updated) VALUES ('','"+filename+"','"+now+"','"+now+"');"
+                cursor = Config.dbConnect.cursor()
+                try:
+                    cursor.execute(query)
+                    Config.dbConnect.commit()
+
+                except MySQLdb.Error, e:
+                    try:
+                        print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+                        return None
+                    except IndexError:
+                        print "MySQL Error: %s" % str(e)
+                        return None
+
+                return redirect(url_for('.get_videos'))
+
+            else:
+                return "Could not upload Video"
+
+    
+    def addVideoToDb(self, videoname):
+
+        now = time.strftime('%Y-%m-%d')
+        query = "INSERT INTO videos(id,name,date_added,date_updated) VALUES ('','"+videoname+"',"+now+","+now+");"
+
+        print query
+
+        cursor = Config.dbConnect.cursor()
+        try:
+            cursor.execute(query)
+
+        except MySQLdb.Error, e:
+            try:
+                print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+                return None
+            except IndexError:
+                print "MySQL Error: %s" % str(e)
+                return None
+
+        return 0
+
     def getVideos(self):
         
         event = request.args.get('event') if request.args.get('event') is not None else None
@@ -74,6 +146,7 @@ class Videos:
         results = {}
         if len(data) >= 1:            
             for row, values in enumerate(data):
+                print(values[6])
                 results[row] = {
                     'id':values[0],
                     'video_name':values[1],

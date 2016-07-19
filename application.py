@@ -1,5 +1,4 @@
-from flask import Flask, request, render_template, send_file, send_from_directory, make_response
-from flask import Response, jsonify
+from flask import Flask, request, redirect, render_template
 from flask.json import JSONEncoder
 #from flask.ext.mysql import MySQL
 from datetime import datetime
@@ -43,6 +42,13 @@ def get_videos():
 def get_video(videoname):
     v = videos.Videos()
     return v.getVideo(videoname)
+
+@app.route("/videos/upload", methods=['POST'])
+def add_video():
+    videoname = request.form['video_name']
+    videofile = request.files.get('file')
+    v = videos.Videos()
+    return v.addVideo(videoname, videofile)
 
 @app.route("/venues/<venuename>")
 def get_venue(venuename):

@@ -1,5 +1,13 @@
 <h3>Welcome to the vrsus api</h3> 
+<h2> Get a Video </h2> 
 <form action="download" method="post">
 	Video Name: <input type="text" name="video_name"><br>
 	<input type="submit" value="Submit">
+</form>
+
+<h2> Add a new Video </h2> 
+<form action="videos/upload" method="post" enctype="multipart/form-data">
+    Video Name: <input type="text" name="video_name"><br>
+    <input type="file" name="file[]" multiple>
+    <input type="submit">
 </form>
