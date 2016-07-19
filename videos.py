@@ -40,46 +40,41 @@ class Videos:
             return Response(e.body, status=e.status, headers=key.resp.getheaders())   
 
     def getVideos(self):
-        conn = MySQLdb.connect( host=Config.MYSQL_DATABASE_HOST,
-                            user=Config.MYSQL_DATABASE_USER,
-                            passwd=Config.MYSQL_DATABASE_PASSWORD,
-                            db=Config.MYSQL_DATABASE_DB,
-                            port=Config.MYSQL_DATABASE_PORT)
         
-        cursor = conn.cursor()
-        eventName = request.args.get('eventname') if request.args.get('eventname') is not None else None
+        event = request.args.get('event') if request.args.get('event') is not None else None
+        count = request.args.get('count') if request.args.get('count') is not None else None
+        order = request.args.get('order') if request.args.get('order') is not None else None
 
-        if eventName is not None:
+        query = "SELECT * from videos"
+
+        if event is not None: 
+            query = query + " where " + "event_name='" + event + "'"
+
+        if order is not None:
+            query = query + " ORDER BY date_updated " + order
+        
+        if count is not None: 
+            query = query + " LIMIT " + count
+
+        query = query +";"
+
+        cursor = Config.dbConnect.cursor()
+        try:
+            cursor.execute(query)
+            data = cursor.fetchall()
+
+        except MySQLdb.Error, e:
             try:
-                cursor.execute("SELECT * from videos where event_name='" + eventName + "';")
-                data = cursor.fetchall()
-
-            except MySQLdb.Error, e:
-                try:
-                    print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                    return None
-                except IndexError:
-                    print "MySQL Error: %s" % str(e)
-                    return None 
-
-        else:
-            try:
-                cursor.execute("SELECT * from videos ORDER BY date_added LIMIT 20;")
-                data = cursor.fetchall()
-
-            except MySQLdb.Error, e:
-                try:
-                    print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                    return None
-                except IndexError:
-                    print "MySQL Error: %s" % str(e)
-                    return None 
-            
-            print "Fetching all data, no event filter specified"
-
+                print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+                return None
+            except IndexError:
+                print "MySQL Error: %s" % str(e)
+                return None 
+        
+        results = {}
         if len(data) >= 1:            
             for row, values in enumerate(data):
-                results = {
+                results[row] = {
                     'id':values[0],
                     'video_name':values[1],
                     'type': values[2],
@@ -91,22 +86,34 @@ class Videos:
                     'date_updated':self.date_handler(values[8])
                 }
 
-                s3 = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
-                bucket = s3.get_bucket('vrsuscovideos')
+        return jsonify(results)
+        #         s3 = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
+        #         bucket = s3.get_bucket('vrsuscovideos')
             
-                print results['video_name']
-                key = boto.s3.key.Key(bucket)
-                key.key = results['video_name']
+        #         print results['video_name']
+        #         key = boto.s3.key.Key(bucket)
+        #         key.key = results['video_name']
 
-                try:
-                    key.open_read()
-                    headers = dict(key.resp.getheaders())
-                    headers['content-type'] = 'video/mp4'
-                    return Response(key, headers=headers)
-                except boto.exception.S3ResponseError as e:
-                    return Response(e.body, status=e.status, headers=key.resp.getheaders())
+        #         try:
+        #             key.open_read()
+        #             headers = dict(key.resp.getheaders())
+        #             headers['content-type'] = 'video/mp4'
+        #             return Response(key, headers=headers)
+        #         except boto.exception.S3ResponseError as e:
+        #             return Response(e.body, status=e.status, headers=key.resp.getheaders())
 
-        else:
-            return "No Videos Found with the Specified Search"
+        # else:
+        #     return "No Videos Found with the Specified Search"
 
-        
+    
+
+    # class Video(db.Model):
+    #     id = db.Column(db.Integer, primary_key=True, unique=True)
+    #     name = db.Column(db.String(255), unique=True)
+
+    #     def __init__(self, id, name):
+    #         self.id = id
+    #         self.name = name
+
+    #     def __repr__(self):
+    #         return '<Name %r>' % self.name
