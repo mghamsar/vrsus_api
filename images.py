@@ -26,47 +26,39 @@ class Images:
             return Response(e.body, status=e.status, headers=key.resp.getheaders())
 
     def getImageNames(self):
-        conn = MySQLdb.connect( host=Config.MYSQL_DATABASE_HOST,
-                            user=Config.MYSQL_DATABASE_USER,
-                            passwd=Config.MYSQL_DATABASE_PASSWORD,
-                            db=Config.MYSQL_DATABASE_DB,
-                            port=Config.MYSQL_DATABASE_PORT)
         
-        cursor = conn.cursor()
         eventName = request.args.get('eventname') if request.args.get('eventname') is not None else None
+        count = request.args.get('count') if request.args.get('count') is not None else None
+        order = request.args.get('order') if request.args.get('order') is not None else None
 
-        if eventName is not None:
+        query = "SELECT * from images"
+
+        if eventName is not None: 
+            query = query + " where " + "event_name='" + eventName
+
+        if order is not None:
+            query = query + " ORDER BY date_updated " + order
+        
+        if count is not None: 
+            query = query + " LIMIT " + count
+
+        query = query +";"
+
+        cursor = Config.dbConnect.cursor()
+        try:
+            cursor.execute(query)
+            data = cursor.fetchall()
+        except MySQLdb.Error, e:
             try:
-                cursor.execute("SELECT * from images where event_name='" + eventName + "';")
-                data = cursor.fetchall()
-
-            except MySQLdb.Error, e:
-                try:
-                    print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                    return None
-                except IndexError:
-                    print "MySQL Error: %s" % str(e)
-                    return None 
-
-        else:
-            try:
-                cursor.execute("SELECT * from images ORDER BY date_added LIMIT 20;")
-                data = cursor.fetchall()
-
-            except MySQLdb.Error, e:
-                try:
-                    print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                    return None
-                except IndexError:
-                    print "MySQL Error: %s" % str(e)
-                    return None 
+                print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+                return None
+            except IndexError:
+                print "MySQL Error: %s" % str(e)
+                return None 
             
-            print "Fetching first 20 images, no event filter specified"
-
         results = {}
         responses = []
         if len(data) >= 1:
-            print str(data)
             for row, values in enumerate(data):
                 results[row] = {
                     'id':values[0],
@@ -84,4 +76,4 @@ class Images:
 
             return jsonify(data=responses)
         else:
-            return "No Images Found with the Specified Search"
+            return "No Image Ids Found with the Specified Search"
