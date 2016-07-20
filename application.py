@@ -59,7 +59,7 @@ def get_venues():
 @app.route("/venues/<venuename>")
 def get_venue(venuename):
     venue = venues.Venues()
-    return venue.getInfo(venuename)
+    return venue.getVenue(venuename)
 
 ##################-------------------------###################
 

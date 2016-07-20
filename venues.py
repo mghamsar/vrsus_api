@@ -43,7 +43,7 @@ class Venues:
         except MySQLdb.Error, e:
             try:
                 print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                return "The request did return results"
+                return None
             except IndexError:
                 print "MySQL Error: %s" % str(e)
                 return None
@@ -68,7 +68,7 @@ class Venues:
 
         return jsonify(results)
 
-    def getInfo(self,venuename):
+    def getVenue(self,venuename):
         cursor = Config.dbConnect.cursor()
 
         # Get values from query string
@@ -105,9 +105,9 @@ class Venues:
         except ValueError, e:
             print(e)
             return None
-        finally:
-            cursor.close()
-            Config.dbConnect.close()
+        #finally:
+        #    cursor.close()
+        #    Config.dbConnect.close()
 
 # class fakefloat(float):
 #     def __init__(self, value):
