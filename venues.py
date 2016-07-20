@@ -19,16 +19,90 @@ class Venues:
             return fakefloat(o)
         raise TypeError(repr(o) + " is not JSON serializable")
 
+
+    def getVenues(self):
+        cursor = Config.dbConnect.cursor()
+
+        query = "SELECT * from venues"
+
+        event = request.args.get('event') if request.args.get('event') is not None else None
+        category = request.args.get('category') if request.args.get('category') is not None else None
+
+        if event is not None:
+            prequery = "SELECT event_id from events where event_name='" + event + "';"
+
+            print prequery
+            try:
+                cursor.execute(prequery)
+                event_id = int(cursor.fetchone()[0])
+
+            except MySQLdb.Error, e:
+                try:
+                    print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+                    return None
+                except IndexError:
+                    print "MySQL Error: %s" % str(e)
+                    return None
+
+        if category is not None:
+            prequery = "SELECT event_id from events where category='" + category + "';"
+
+            print prequery
+            try:
+                cursor.execute(prequery)
+                event_id = int(cursor.fetchone()[0])
+
+            except MySQLdb.Error, e:
+                try:
+                    print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+                    return None
+                except IndexError:
+                    print "MySQL Error: %s" % str(e)
+                    return None
+
+
+        if event_id is not None:
+            print(event_id);
+            query = query + " as v JOIN events as e where v.id=e.venue_id AND e.event_id="+str(event_id)
+
+            print(query)
+
+
+        query = query +";"
+
+        try:
+            cursor.execute(query)
+            data = cursor.fetchall()
+            print(data)
+        except MySQLdb.Error, e:
+            try:
+                print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+                return None
+            except IndexError:
+                print "MySQL Error: %s" % str(e)
+                return None
+
+        results = {}
+        if len(data) >= 1:
+            for row, values in enumerate(data):
+                print(str(values))
+                results[row] = {
+                    'id':values[0],
+                    'venue_name':values[1],
+                    'lat':str(values[2]),
+                    'long':str(values[3]),
+                    'date_added':self.date_handler(values[4]),
+                    'date_updated':self.date_handler(values[5]),
+                    'category':values[14]
+                }
+
+        return jsonify(results)
+
     def getInfo(self,venuename):
-        conn = MySQLdb.connect( host=Config.MYSQL_DATABASE_HOST,
-                                user=Config.MYSQL_DATABASE_USER,
-                                passwd=Config.MYSQL_DATABASE_PASSWORD,
-                                db=Config.MYSQL_DATABASE_DB,
-                                port=Config.MYSQL_DATABASE_PORT)
-        cursor = conn.cursor()
+        cursor = Config.dbConnect.cursor()
 
         # Get values from query string
-        video_name = request.args.get('video');
+        event = request.args.get('event') if request.args.get('event') is not None else None
 
         results = {}
         try:
@@ -63,7 +137,7 @@ class Venues:
             return None
         finally:
             cursor.close()
-            conn.close()
+            Config.dbConnect.close()
 
 # class fakefloat(float):
 #     def __init__(self, value):

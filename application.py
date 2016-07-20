@@ -50,6 +50,12 @@ def add_video():
     v = videos.Videos()
     return v.addVideo(videoname, videofile)
 
+@app.route("/venues/")
+def get_venues():
+    venue = venues.Venues()
+    return venue.getVenues()
+
+
 @app.route("/venues/<venuename>")
 def get_venue(venuename):
     venue = venues.Venues()
