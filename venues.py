@@ -30,55 +30,20 @@ class Venues:
         event_id = None
 
         if event is not None:
-            prequery = "SELECT event_id from events where event_name='" + event + "';"
-
-            print prequery
-            try:
-                cursor.execute(prequery)
-                event_id = int(cursor.fetchone()[0])
-
-            except MySQLdb.Error, e:
-                try:
-                    print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                    return None
-                except IndexError:
-                    print "MySQL Error: %s" % str(e)
-                    return None
+            query = query + " as v JOIN events as e where v.id=e.venue_id AND e.event_name='"+event+"'"
 
         if category is not None:
-            prequery = "SELECT event_id from events where category='" + category + "';"
-
-            print prequery
-            try:
-                cursor.execute(prequery)
-                event_id = int(cursor.fetchone()[0])
-
-            except MySQLdb.Error, e:
-                try:
-                    print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                    return None
-                except IndexError:
-                    print "MySQL Error: %s" % str(e)
-                    return None
-
-
-        if event_id is not None:
-            print(event_id);
-            query = query + " as v JOIN events as e where v.id=e.venue_id AND e.event_id="+str(event_id)
-
-            print(query)
-
+            query = query + " as v JOIN events as e where v.id=e.venue_id AND e.category='"+category+"'"
 
         query = query +";"
 
         try:
             cursor.execute(query)
             data = cursor.fetchall()
-            print(data)
         except MySQLdb.Error, e:
             try:
                 print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                return None
+                return "The request did return results"
             except IndexError:
                 print "MySQL Error: %s" % str(e)
                 return None
@@ -100,7 +65,6 @@ class Venues:
             for row, values in enumerate(data):
                 print(str(values))
                 results[row]['category'] = values[14]
-
 
         return jsonify(results)
 
