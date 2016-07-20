@@ -48,6 +48,34 @@ class Venues:
                 print "MySQL Error: %s" % str(e)
                 return None
 
+        if category is not None and len(data) == 0:
+            # Try a second query with lower case letters 
+            query = query + " as v JOIN events as e where v.id=e.venue_id AND e.event_name='"+category.lower()+"'"
+            try:
+                cursor.execute(query)
+                data = cursor.fetchall()
+            except MySQLdb.Error, e:
+                try:
+                    print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+                    return None
+                except IndexError:
+                    print "MySQL Error: %s" % str(e)
+                    return None
+
+        elif event is not None and len(data) == 0:
+            # Try a second query with lower case letters 
+            query = query + " as v JOIN events as e where v.id=e.venue_id AND e.event_name='"+event.lower()+"'"
+            try:
+                cursor.execute(query)
+                data = cursor.fetchall()
+            except MySQLdb.Error, e:
+                try:
+                    print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+                    return None
+                except IndexError:
+                    print "MySQL Error: %s" % str(e)
+                    return None
+
         results = {}
         if len(data) >= 1:
             for row, values in enumerate(data):
