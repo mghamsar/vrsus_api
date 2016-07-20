@@ -27,6 +27,7 @@ class Venues:
 
         event = request.args.get('event') if request.args.get('event') is not None else None
         category = request.args.get('category') if request.args.get('category') is not None else None
+        event_id = None
 
         if event is not None:
             prequery = "SELECT event_id from events where event_name='" + event + "';"
@@ -93,8 +94,13 @@ class Venues:
                     'long':str(values[3]),
                     'date_added':self.date_handler(values[4]),
                     'date_updated':self.date_handler(values[5]),
-                    'category':values[14]
                 }
+
+        if len(data) >= 13:
+            for row, values in enumerate(data):
+                print(str(values))
+                results[row]['category'] = values[14]
+
 
         return jsonify(results)
 
