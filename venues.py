@@ -21,7 +21,13 @@ class Venues:
 
 
     def getVenues(self):
-        cursor = Config.dbConnect.cursor()
+        
+        dbConnect = MySQLdb.connect(host=Config.MYSQL_DATABASE_HOST, user=Config.MYSQL_DATABASE_USER, 
+            passwd=Config.MYSQL_DATABASE_PASSWORD,
+            db=Config.MYSQL_DATABASE_DB,
+            port=Config.MYSQL_DATABASE_PORT)
+        
+        cursor =dbConnect.cursor()
 
         query = "SELECT * from venues"
 
@@ -97,7 +103,13 @@ class Venues:
         return jsonify(results)
 
     def getVenue(self,venuename):
-        cursor = Config.dbConnect.cursor()
+        
+        dbConnect = MySQLdb.connect(host=Config.MYSQL_DATABASE_HOST, user=Config.MYSQL_DATABASE_USER, 
+            passwd=Config.MYSQL_DATABASE_PASSWORD,
+            db=Config.MYSQL_DATABASE_DB,
+            port=Config.MYSQL_DATABASE_PORT)
+        
+        cursor =dbConnect.cursor()
 
         # Get values from query string
         event = request.args.get('event') if request.args.get('event') is not None else None
@@ -133,9 +145,9 @@ class Venues:
         except ValueError, e:
             print(e)
             return None
-        #finally:
-        #    cursor.close()
-        #    Config.dbConnect.close()
+        finally:
+            cursor.close()
+            dbConnect.close()
 
 # class fakefloat(float):
 #     def __init__(self, value):

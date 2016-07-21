@@ -71,7 +71,15 @@ class Videos:
                 #self.addVideoToDb(filename)
                 now = time.strftime('%Y-%m-%d')
                 query = "INSERT INTO videos(id,name,date_added,date_updated) VALUES ('','"+filename+"','"+now+"','"+now+"');"
-                cursor = Config.dbConnect.cursor()
+                
+
+                dbConnect = MySQLdb.connect(host=Config.MYSQL_DATABASE_HOST, user=Config.MYSQL_DATABASE_USER, 
+                    passwd=Config.MYSQL_DATABASE_PASSWORD,
+                    db=Config.MYSQL_DATABASE_DB,
+                    port=Config.MYSQL_DATABASE_PORT)
+        
+                cursor =dbConnect.cursor()
+                
                 try:
                     cursor.execute(query)
                     Config.dbConnect.commit()
@@ -83,6 +91,9 @@ class Videos:
                     except IndexError:
                         print "MySQL Error: %s" % str(e)
                         return None
+                finally:
+                    cursor.close()
+                    dbConnect.close()
 
                 return redirect(url_for('.get_videos'))
 
@@ -97,7 +108,13 @@ class Videos:
 
         print query
 
-        cursor = Config.dbConnect.cursor()
+        dbConnect = MySQLdb.connect(host=Config.MYSQL_DATABASE_HOST, user=Config.MYSQL_DATABASE_USER, 
+            passwd=Config.MYSQL_DATABASE_PASSWORD,
+            db=Config.MYSQL_DATABASE_DB,
+            port=Config.MYSQL_DATABASE_PORT)
+        
+        cursor =dbConnect.cursor()
+
         try:
             cursor.execute(query)
 
@@ -108,6 +125,9 @@ class Videos:
             except IndexError:
                 print "MySQL Error: %s" % str(e)
                 return None
+        finally:
+            cursor.close()
+            dbConnect.close()
 
         return 0
 
@@ -130,18 +150,25 @@ class Videos:
 
         query = query +";"
 
-        cursor = Config.dbConnect.cursor()
+        dbConnect = MySQLdb.connect(host=Config.MYSQL_DATABASE_HOST, user=Config.MYSQL_DATABASE_USER, 
+            passwd=Config.MYSQL_DATABASE_PASSWORD,
+            db=Config.MYSQL_DATABASE_DB,
+            port=Config.MYSQL_DATABASE_PORT)
+
+        cursor = dbConnect.cursor()
         try:
             cursor.execute(query)
             data = cursor.fetchall()
-
         except MySQLdb.Error, e:
             try:
                 print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
                 return None
             except IndexError:
                 print "MySQL Error: %s" % str(e)
-                return None 
+                return None
+        finally:
+            cursor.close()
+            dbConnect.close()
         
         results = {}
         if len(data) >= 1:            
