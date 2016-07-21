@@ -44,7 +44,12 @@ class Images:
 
         query = query +";"
 
-        cursor = Config.dbConnect.cursor()
+        dbConnect = MySQLdb.connect(host=Config.MYSQL_DATABASE_HOST, user=Config.MYSQL_DATABASE_USER, 
+            passwd=Config.MYSQL_DATABASE_PASSWORD,
+            db=Config.MYSQL_DATABASE_DB,
+            port=Config.MYSQL_DATABASE_PORT)
+        
+        cursor = dbConnect.cursor()
         try:
             cursor.execute(query)
             data = cursor.fetchall()
@@ -55,8 +60,6 @@ class Images:
             except IndexError:
                 print "MySQL Error: %s" % str(e)
                 return None
-        #finally:
-        #    cursor.close()
             
         results = {}
         responses = []
@@ -76,8 +79,9 @@ class Images:
 
                 responses.append(results[row]['file_name'])
 
-            Config.dbConnect.close()
+            cursor.close()
+            dbConnect.close()
             return jsonify(data=responses)
         else:
-            Config.dbConnect.close()
+            dbConnect.close()
             return "No Image Ids Found with the Specified Search"
