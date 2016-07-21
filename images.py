@@ -54,7 +54,9 @@ class Images:
                 return None
             except IndexError:
                 print "MySQL Error: %s" % str(e)
-                return None 
+                return None
+        #finally:
+        #    cursor.close()
             
         results = {}
         responses = []
@@ -74,6 +76,8 @@ class Images:
 
                 responses.append(results[row]['file_name'])
 
+            Config.dbConnect.close()
             return jsonify(data=responses)
         else:
+            Config.dbConnect.close()
             return "No Image Ids Found with the Specified Search"
