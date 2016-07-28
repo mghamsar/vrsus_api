@@ -12,11 +12,11 @@ class Images:
             else:
                 raise TypeError
 
-    def loadImage(self, imagename):
+    def loadImage(self, filename):
         conn = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
         bucket = conn.get_bucket('vrsusimages', validate=False)
         key = boto.s3.key.Key(bucket)
-        key.key = imagename 
+        key.key = filename 
 
         try:
             key.open_read()

@@ -7,6 +7,7 @@ import os
 import tempfile
 from decimal import Decimal
 import venues
+import events
 import videos
 import images
 import decimal
@@ -49,6 +50,15 @@ def add_video():
     videofile = request.files.get('file')
     v = videos.Videos()
     return v.addVideo(videoname, videofile)
+
+##################-------------------------###################
+
+@app.route("/events/")
+def get_events():
+    event = events.Events()
+    return event.getEvents()
+
+##################-------------------------###################
 
 @app.route("/venues/")
 def get_venues():

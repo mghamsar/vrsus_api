@@ -46,17 +46,17 @@ class Venues:
         query = query +";"
 
         dbi = Db();
-        data = dbi.runQuery(query);
+        data = dbi.getQuery(query);
 
         if category is not None and len(data) == 0:
             # Try a second query with lower case letters 
             query = query + " as v JOIN events as e where v.id=e.venue_id AND e.event_name='"+category.lower()+"'"
-            data = dbi.runQuery(query);
+            data = dbi.getQuery(query);
 
         elif event is not None and len(data) == 0:
             # Try a second query with lower case letters 
             query = query + " as v JOIN events as e where v.id=e.venue_id AND e.event_name='"+event.lower()+"'"
-            data = dbi.runQuery(query);
+            data = dbi.getQuery(query)
 
         results = {}
         if len(data) >= 1:
