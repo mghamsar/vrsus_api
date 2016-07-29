@@ -178,42 +178,11 @@ class Videos:
                     'id':values[0],
                     'video_name':values[1],
                     'type': values[2],
-                    'video_id':values[3],
-                    'event_id':values[4],
-                    'event_name':values[5],
-                    'venue_name':values[7],
-                    'date_added':self.date_handler(values[6]),
-                    'date_updated':self.date_handler(values[8])
+                    'event_id':values[3],
+                    'event_name':values[4],
+                    'category':values[7],
+                    'date_added':self.date_handler(values[5]),
+                    'date_updated':self.date_handler(values[6])
                 }
 
         return jsonify(results)
-        #         s3 = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
-        #         bucket = s3.get_bucket('vrsuscovideos')
-            
-        #         print results['video_name']
-        #         key = boto.s3.key.Key(bucket)
-        #         key.key = results['video_name']
-
-        #         try:
-        #             key.open_read()
-        #             headers = dict(key.resp.getheaders())
-        #             headers['content-type'] = 'video/mp4'
-        #             return Response(key, headers=headers)
-        #         except boto.exception.S3ResponseError as e:
-        #             return Response(e.body, status=e.status, headers=key.resp.getheaders())
-
-        # else:
-        #     return "No Videos Found with the Specified Search"
-
-    
-
-    # class Video(db.Model):
-    #     id = db.Column(db.Integer, primary_key=True, unique=True)
-    #     name = db.Column(db.String(255), unique=True)
-
-    #     def __init__(self, id, name):
-    #         self.id = id
-    #         self.name = name
-
-    #     def __repr__(self):
-    #         return '<Name %r>' % self.name
