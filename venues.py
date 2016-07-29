@@ -43,19 +43,19 @@ class Venues:
         if count is not None:
              query = query + " LIMIT "+str(count);
 
-        query = query +";"
+        query = "SELECT * from venues"
 
         dbi = Db();
         data = dbi.getQuery(query);
 
         if category is not None and len(data) == 0:
             # Try a second query with lower case letters 
-            query = query + " as v JOIN events as e where v.id=e.venue_id AND e.event_name='"+category.lower()+"'"
+            query = query + " as v JOIN events as e where v.id=e.venue_id AND e.event_name='"+category.lower()+"';"
             data = dbi.getQuery(query);
 
         elif event is not None and len(data) == 0:
             # Try a second query with lower case letters 
-            query = query + " as v JOIN events as e where v.id=e.venue_id AND e.event_name='"+event.lower()+"'"
+            query = query + " as v JOIN events as e where v.id=e.venue_id AND e.event_name='"+event.lower()+"';"
             data = dbi.getQuery(query)
 
         results = {}
@@ -79,39 +79,13 @@ class Venues:
         return jsonify(results)
 
     def getVenue(self,venuename):
-        
-        dbConnect = MySQLdb.connect(host=Config.MYSQL_DATABASE_HOST, user=Config.MYSQL_DATABASE_USER, 
-            passwd=Config.MYSQL_DATABASE_PASSWORD,
-            db=Config.MYSQL_DATABASE_DB,
-            port=Config.MYSQL_DATABASE_PORT)
-        
-        cursor =dbConnect.cursor()
 
-        # Get values from query string
-        event = request.args.get('event') if request.args.get('event') is not None else None
-        count = request.args.get('count') if request.args.get('count') is not None else None
+        query = "SELECT * from venues where name='" + venuename + "';"
+
+        dbi = Db();
+        data = dbi.getQuery(query);
 
         results = {}
-        try:
-            cursor.execute("SELECT * from venues where name='" + venuename + "'")
-            data = cursor.fetchall()
-        except MySQLdb.Error, e:
-            try:
-                print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                return None
-            except IndexError:
-                print "MySQL Error: %s" % str(e)
-                return None
-        except TypeError, e:
-            print(e)
-            return None
-        except ValueError, e:
-            print(e)
-            return None
-        finally:
-            cursor.close()
-            dbConnect.close()
-
         if len(data)>=1:
             for row, values in enumerate(data):
                 results = {'id':values[0],

@@ -4,6 +4,7 @@ import boto, boto.s3.connection
 from boto.s3.key import Key
 from flask import jsonify, url_for, request, redirect, Response,render_template
 from config import Config
+from db import Db
 
 class Videos:
 
@@ -150,26 +151,9 @@ class Videos:
 
         query = query +";"
 
-        dbConnect = MySQLdb.connect(host=Config.MYSQL_DATABASE_HOST, user=Config.MYSQL_DATABASE_USER, 
-            passwd=Config.MYSQL_DATABASE_PASSWORD,
-            db=Config.MYSQL_DATABASE_DB,
-            port=Config.MYSQL_DATABASE_PORT)
+        dbi = Db();
+        data = dbi.getQuery(query);
 
-        cursor = dbConnect.cursor()
-        try:
-            cursor.execute(query)
-            data = cursor.fetchall()
-        except MySQLdb.Error, e:
-            try:
-                print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                return None
-            except IndexError:
-                print "MySQL Error: %s" % str(e)
-                return None
-        finally:
-            cursor.close()
-            dbConnect.close()
-        
         results = {}
         if len(data) >= 1:            
             for row, values in enumerate(data):

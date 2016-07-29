@@ -27,6 +27,9 @@ class Db:
             except IndexError:
                 print "MySQL Error: %s" % str(e)
                 return None
+        finally:
+            cursor.close()
+            dbConnect.close()
 
 
     def addQuery(self,query):
