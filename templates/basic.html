@@ -7,7 +7,9 @@
 
 <h2> Add a new Video </h2> 
 <form action="videos/upload" method="post" enctype="multipart/form-data">
-    Video Name: <input type="text" name="video_name"><br>
+    Video Name: <input type="text" name="video_name"></br><!-- value="Eg. jam_session_01.mp3"><br>-->
+    Event Name: <input type="text" name="event_name"></br><!-- value="Eg. hackney Festival"><br>-->
+    Venue Name: <input type="text" name="venue_name"></br><!-- value="Eg. Sonos studios"><br>-->
     <input type="file" name="file[]" multiple>
     <input type="submit">
 </form>

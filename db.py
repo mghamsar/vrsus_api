@@ -37,13 +37,13 @@ class Db:
             passwd=Config.MYSQL_DATABASE_PASSWORD,
             db=Config.MYSQL_DATABASE_DB,
             port=Config.MYSQL_DATABASE_PORT)
-        
+            
         cursor = dbConnect.cursor()
 
         try:
             cursor.execute(query)
-            data = cursor.fetchall()
-            return data
+            dbConnect.commit()
+
         except MySQLdb.Error, e:
             try:
                 print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
@@ -51,3 +51,8 @@ class Db:
             except IndexError:
                 print "MySQL Error: %s" % str(e)
                 return None
+        finally:
+            cursor.close()
+            dbConnect.close()
+
+        return 0

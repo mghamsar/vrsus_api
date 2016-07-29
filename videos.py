@@ -42,7 +42,7 @@ class Videos:
         except boto.exception.S3ResponseError as e:
             return Response(e.body, status=e.status, headers=key.resp.getheaders())   
 
-    def addVideo(self,filename,data_file):
+    def addVideo(self,videoname, eventname=None, venuename=None):
         s3 = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
         bucket = s3.get_bucket('vrsuscovideos')
         k = Key(bucket)
@@ -64,71 +64,36 @@ class Videos:
 
             # Use Boto to upload the file to the S3 bucket
             #k.key = data_file.filename
-            k.key = filename
+            k.key = videoname
             print "Uploading some data to bucket with key: " + k.key
             sent = k.set_contents_from_string(file_contents)
 
             if sent == size:
-                #self.addVideoToDb(filename)
-                now = time.strftime('%Y-%m-%d')
-                query = "INSERT INTO videos(id,name,date_added,date_updated) VALUES ('','"+filename+"','"+now+"','"+now+"');"
-                
-
-                dbConnect = MySQLdb.connect(host=Config.MYSQL_DATABASE_HOST, user=Config.MYSQL_DATABASE_USER, 
-                    passwd=Config.MYSQL_DATABASE_PASSWORD,
-                    db=Config.MYSQL_DATABASE_DB,
-                    port=Config.MYSQL_DATABASE_PORT)
-        
-                cursor =dbConnect.cursor()
-                
-                try:
-                    cursor.execute(query)
-                    Config.dbConnect.commit()
-
-                except MySQLdb.Error, e:
-                    try:
-                        print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                        return None
-                    except IndexError:
-                        print "MySQL Error: %s" % str(e)
-                        return None
-                finally:
-                    cursor.close()
-                    dbConnect.close()
+                self.addVideoToDb(videoname, eventname, venuename)
 
                 return redirect(url_for('.get_videos'))
 
             else:
                 return "Could not upload Video"
-
     
-    def addVideoToDb(self, videoname):
+    def addVideoToDb(self, videoname, eventname=None, venuename=None, category=None):
 
         now = time.strftime('%Y-%m-%d')
-        query = "INSERT INTO videos(id,name,date_added,date_updated) VALUES ('','"+videoname+"',"+now+","+now+");"
+  
+        query = "SELECT name from videos where name='"+videoname+"';"
+        dbi = Db();
+        data = dbi.getQuery(query);
 
-        print query
+        if not data:
+            addquery = "INSERT INTO videos(id,name,date_added,date_updated) VALUES ('','"+videoname+"','"+now+"','"+now+"');"
+            print addquery
 
-        dbConnect = MySQLdb.connect(host=Config.MYSQL_DATABASE_HOST, user=Config.MYSQL_DATABASE_USER, 
-            passwd=Config.MYSQL_DATABASE_PASSWORD,
-            db=Config.MYSQL_DATABASE_DB,
-            port=Config.MYSQL_DATABASE_PORT)
-        
-        cursor =dbConnect.cursor()
+            dbi.addQuery(addquery);
 
-        try:
-            cursor.execute(query)
+        elif eventname is not None:
+            addquery = "UPDATE videos SET event_name='"+eventname+"' WHERE name='"+videoname+"';"
 
-        except MySQLdb.Error, e:
-            try:
-                print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
-                return None
-            except IndexError:
-                print "MySQL Error: %s" % str(e)
-                return None
-        finally:
-            cursor.close()
-            dbConnect.close()
+            dbi.addQuery(addquery);
 
         return 0
 

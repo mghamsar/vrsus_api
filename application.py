@@ -47,9 +47,11 @@ def get_video(videoname):
 @app.route("/videos/upload", methods=['POST'])
 def add_video():
     videoname = request.form['video_name']
-    videofile = request.files.get('file')
+    eventname = request.form['event_name']
+    venuename = request.form['venue_name']
+
     v = videos.Videos()
-    return v.addVideo(videoname, videofile)
+    return v.addVideo(videoname)
 
 ##################-------------------------###################
 
