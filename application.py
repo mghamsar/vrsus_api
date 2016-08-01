@@ -13,7 +13,7 @@ import images
 import decimal
 import flask.json
 
-application = app = Flask(__name__)
+application = app = Flask(__name__,static_folder='static', static_url_path='')
 app.config.from_object('config.Config')
 app.json_encoder = JSONEncoder
 
