@@ -18,15 +18,21 @@ class Events:
         name = request.args.get('name') if request.args.get('name') is not None else None
         category = request.args.get('category') if request.args.get('category') is not None else None
         count = request.args.get('count') if request.args.get('count') is not None else None
+        #addvideos = request.args.get('addvideos') if request.args.get('addvideos') is not None else None
+	    #addimages = request.args.get('addimages') if request.args.get('addimages') is not None else None
 
         query = "SELECT * from events";
 
+        query = "select e.*, v.name, i.name from events as e \
+        LEFT JOIN videos as v on e.event_id=v.event_id \
+        LEFT JOIN images as i on e.event_id=i.event_id"
+
         if name is not None and category is not None:
-            query = query + " where event_name='"+name+"' AND category='"+category+"'"
+            query = query + " where e.event_name='"+name+"' AND e.category='"+category+"'"
         elif category is not None:
-            query = query + " where category='"+category+"'"
+            query = query + " where e.category='"+category+"'"
         elif name is not None:
-            query = query + " where event_name='"+name+"'"
+            query = query + " where e.event_name='"+name+"'"
         
         if count is not None:
              query = query + " LIMIT "+str(count)
@@ -34,11 +40,12 @@ class Events:
         query = query +";"
 
         dbi = Db()
+        #data = dbi.getQuery(query)
         data = dbi.getQuery(query)
         con = Config()
 
         results = {}
-        if len(data) >= 1:
+        if data is not None and len(data) >= 1:
             for row, values in enumerate(data):
                 print(str(values))
                 results[row] = {
@@ -46,7 +53,9 @@ class Events:
                     'name':values[1],
                     'date':con.date_handler(values[2]),
                     'venue':values[4],
-                    'type':values[5]
+                    'type':values[5],
+                    'imagefilename':values[10],
+                    'videofilename':values[9]
                     }
 
         return jsonify(results)
