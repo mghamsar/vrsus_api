@@ -5,9 +5,6 @@ from flask import jsonify, request, redirect, url_for, Response, make_response
 from config import Config
 import json
 from db import Db
-import cStringIO
-import urllib
-import Image
 
 class Images:
 
