@@ -32,8 +32,12 @@ class Images:
         eventName = request.args.get('eventname') if request.args.get('eventname') is not None else None
         count = request.args.get('count') if request.args.get('count') is not None else None
         order = request.args.get('order') if request.args.get('order') is not None else None
+        category = request.args.get('category') if request.args.get('category') is not None else None
 
         query = "SELECT * from images"
+
+        if category is not None and int(category)==1:
+            query = query + " where type='category'"
 
         if eventName is not None: 
             query = query + " where " + "event_name='" + eventName
@@ -70,24 +74,29 @@ class Images:
         return jsonify(data=responses)
 
 
-    def addImage(self,imagename, eventname=None, venuename=None):
+    def addImage(self,imagename=None, eventname=None, venuename=None):
         s3 = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
         bucket = s3.get_bucket('vrsusimages', validate=False)
         k = boto.s3.key.Key(bucket)
 
         # Loop over the list of files from the HTML input control
         data_files = request.files.getlist('image[]')
+        imagename = request.form['image_name']
         
         for data_file in data_files:
             file_contents = data_file.read()
             size = len(file_contents)
 
-            #k.key = data_file.filename
-            k.key = imagename
+            if len(imagename)>1:
+                k.key = imagename
+            else:
+                k.key = data_file.filename
+            print "Uploading some data to bucket with key: " + k.key
+
             sent = k.set_contents_from_string(file_contents)
 
             if sent == size:
-                self.addImageToDb(imagename, eventname, venuename)
+                self.addImageToDb(k.key, eventname, venuename)
 
                 return redirect(url_for('.get_images'))
 

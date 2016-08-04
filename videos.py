@@ -63,8 +63,11 @@ class Videos:
             file_contents = data_file.read()
 
             # Use Boto to upload the file to the S3 bucket
-            #k.key = data_file.filename
-            k.key = videoname
+            if len(videoname)>1:
+                k.key = videoname
+            else:
+                k.key = data_file.filename
+
             print "Uploading some data to bucket with key: " + k.key
             sent = k.set_contents_from_string(file_contents)
 
@@ -79,7 +82,6 @@ class Videos:
     def addVideoToDb(self, videoname, eventname=None, venuename=None, category=None):
 
         now = time.strftime('%Y-%m-%d')
-  
         query = "SELECT name from videos where name='"+videoname+"';"
         dbi = Db();
         data = dbi.getQuery(query);

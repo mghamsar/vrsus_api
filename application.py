@@ -87,12 +87,11 @@ def load_image(imagename):
 
 @app.route("/images/upload", methods=['POST'])
 def add_image():
-    imagename = request.form['image_name']
     #eventname = request.form['image_event_name']
     #venuename = request.form['image_venue_name']
 
     v = images.Images()
-    return v.addImage(imagename)
+    return v.addImage()
     
 #################---------------------###################
 
