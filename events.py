@@ -12,23 +12,19 @@ class Events:
 
 
     def getEvents(self):
-
-        print request
-        
         name = request.args.get('name') if request.args.get('name') is not None else None
         category = request.args.get('category') if request.args.get('category') is not None else None
         count = request.args.get('count') if request.args.get('count') is not None else None
-        #addvideos = request.args.get('addvideos') if request.args.get('addvideos') is not None else None
-	    #addimages = request.args.get('addimages') if request.args.get('addimages') is not None else None
+        eventType = request.args.get('type') if request.args.get('type') is not None else None
 
-        query = "SELECT * from events";
-
-        query = "select e.*, v.name, i.name from events as e \
+        query = "SELECT e.*, v.name, i.name from events as e \
         LEFT JOIN videos as v on e.event_id=v.event_id \
         LEFT JOIN images as i on e.event_id=i.event_id"
 
         if name is not None and category is not None:
             query = query + " where e.event_name='"+name+"' AND e.category='"+category+"'"
+        elif eventType is not None: 
+            query = query + " where e.type='"+eventType+"'"
         elif category is not None:
             query = query + " where e.category='"+category+"'"
         elif name is not None:
@@ -40,7 +36,6 @@ class Events:
         query = query +";"
 
         dbi = Db()
-        #data = dbi.getQuery(query)
         data = dbi.getQuery(query)
         con = Config()
 
