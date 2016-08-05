@@ -37,9 +37,9 @@ class Images:
         order = request.args.get('order') if request.args.get('order') is not None else None
         category = request.args.get('category') if request.args.get('category') is not None else None
 
-        query = "SELECT * from images"
+        query = "SELECT id,name,category from images"
 
-        if category is not None and int(category)==1:
+        if category is not None and int(category) == 1:
             query = query + " where type='category'"
 
         if eventName is not None: 
@@ -63,18 +63,19 @@ class Images:
                 results[row] = {
                     'id':values[0],
                     'file_name':values[1],
-                    'type': values[2],
-                    'venue_id':values[3],
-                    'venue_name':values[4],
-                    'event_id':values[5],
-                    'event_name':values[6],
-                    'date_added':self.date_handler(values[7]),
-                    'date_updated':self.date_handler(values[8])
+                    'category':values[2]
+                    # 'type': values[2],
+                    # 'venue_id':values[3],
+                    # 'venue_name':values[4],
+                    # 'event_id':values[5],
+                    # 'event_name':values[6],
+                    # 'date_added':self.date_handler(values[7]),
+                    # 'date_updated':self.date_handler(values[8])
                 }
 
                 responses.append(results[row]['file_name'])
 
-        return jsonify(data=responses)
+        return jsonify(data=results)
 
 
     def addImage(self,imagename=None, eventname=None, venuename=None):
