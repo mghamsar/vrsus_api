@@ -23,13 +23,16 @@ class Images:
         try:
             key.open_read()
             headers = dict(key.resp.getheaders())
+            if headers['content-type'] is not 'image/jpeg': 
+                headers['content-type'] = 'image/jpeg'
+
             return Response(key, headers=headers)
         except boto.exception.S3ResponseError as e:
             return Response(e.body, status=e.status, headers=key.resp.getheaders())
 
     def getImageNames(self):
         
-        eventName = request.args.get('eventname') if request.args.get('eventname') is not None else None
+        eventName = request.args.get('event') if request.args.get('event') is not None else None
         count = request.args.get('count') if request.args.get('count') is not None else None
         order = request.args.get('order') if request.args.get('order') is not None else None
         category = request.args.get('category') if request.args.get('category') is not None else None
