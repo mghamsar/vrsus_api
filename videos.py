@@ -35,10 +35,10 @@ class Videos:
 
         # Loop over the list of files from the HTML input control
         data_files = request.files.getlist('file[]')
-        videoname = request.form['video_name']
-        eventname = request.form['event_name']
-        eventtype = request.form['event_type']
-        eventcategory = request.form['event_category']
+        videoname = request.form['video_name'] if request.form['video_name'] is not None else None
+        eventname = request.form['event_name'] if request.form['event_name'] is not None else None
+        eventtype = request.form['event_type'] if request.form['event_type'] is not None else None
+        eventcategory = request.form["event_category"] if request.form["event_category"] is not None else None
 
         for data_file in data_files:
             try:
@@ -50,25 +50,27 @@ class Videos:
 
             # Read the contents of the file
             file_contents = data_file.read()
-            # Use Boto to upload the file to the S3 bucket
-            if len(videoname)<=1:
+
+            if videoname is None:
                 videoname = data_file.filename
 
             videoname = videoname.lower()
             videoname = videoname.replace(" ","_")
             k.key = videoname
+
+            # Use Boto to upload the file to the S3 bucket
             print "Uploading some data to bucket with key: " + k.key
             sent = k.set_contents_from_string(file_contents)
 
             if sent == size:
-                self.addVideoToDb(videoname, eventname, venuename)
+                self.addVideoToDb(videoname, eventname, eventtype, eventcategory)
 
                 return redirect(url_for('.get_videos'))
 
             else:
                 return "Could not upload Video"
     
-    def addVideoToDb(self, videoname, eventname=None, type=None, category=None):
+    def addVideoToDb(self, videoname, eventname=None, eventtype=None, eventcategory=None):
 
         now = time.strftime('%Y-%m-%d')
         query = "SELECT name from videos where name='"+videoname+"';"
@@ -76,15 +78,27 @@ class Videos:
         data = dbi.getQuery(query);
 
         if not data:
-            addquery = "INSERT INTO videos(id,name,date_added,date_updated) VALUES ('','"+videoname+"','"+now+"','"+now+"');"
-            print addquery
+            if eventname is not None and eventtype is not None and eventcategory is not None:
+                addquery = "INSERT INTO videos VALUES ('','"+videoname+"','"+eventname+"','"+eventname+"','"+now+"','"+now+"');"
+            
+            else:
+                addquery = "INSERT INTO videos(id,name,date_added,date_updated) VALUES ('','"+videoname+"','"+now+"','"+now+"');"
+                print addquery
+                dbi.addQuery(addquery);
 
-            dbi.addQuery(addquery);
+        else:
+            if eventname is not None and eventtype is not None and eventcategory is not None:
+                addquery = "UPDATE videos SET event_name='"+eventname+"', type='"+eventtype+"', category='"+eventcategory+"',\
+                 date_updated='"+now+"' WHERE name='"+videoname+"';"
+                
+                print addquery
+                dbi.addQuery(addquery);
 
-        elif eventname is not None:
-            addquery = "UPDATE videos SET event_name='"+eventname+"' WHERE name='"+videoname+"';"
+            elif eventname is not None:
+                print "EVENT NAME", eventname
+                addquery = "UPDATE videos SET event_name='"+eventname+"' WHERE name='"+videoname+"';"
 
-            dbi.addQuery(addquery);
+                dbi.addQuery(addquery);
 
         return 0
 
