@@ -25,7 +25,9 @@ class JSONEncoder(flask.json.JSONEncoder):
 
 @app.route("/")
 def index():
-    return render_template('basic.html')
+    v = videos.Videos()
+    data = v.getVideos(template=True)
+    return render_template('basic.html', videos = data)
 
 @app.route('/download', methods=['POST'])
 def download():
@@ -46,12 +48,12 @@ def get_video(videoname):
 
 @app.route("/videos/upload", methods=['POST'])
 def add_video():
-    videoname = request.form['video_name']
-    eventname = request.form['event_name']
-    venuename = request.form['venue_name']
+    #videoname = request.form['video_name']
+    #eventname = request.form['event_name']
+    #venuename = request.form['venue_name']
 
     v = videos.Videos()
-    return v.addVideo(videoname)
+    return v.addVideo()
 
 ##################-------------------------###################
 
