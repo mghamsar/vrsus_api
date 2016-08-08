@@ -7,7 +7,6 @@ from config import Config
 from db import Db
 
 class Videos:
-
     def date_handler(self, obj):
             if hasattr(obj, 'isoformat'):
                 return obj.isoformat()
@@ -17,22 +16,9 @@ class Videos:
     def getVideo(self, videoname):
         s3 = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
         bucket = s3.get_bucket('vrsuscovideos')
-        # key = bucket.get_key(videoname)
-        # key.get_contents_to_filename(videoname)
-        # if key:        
-        #     with open(videoname, 'rb') as f:
-        #         body = f.read()
-        #         response = make_response(body)
-        #         response.headers['Content-Description'] = 'File Transfer'
-        #         response.headers['Cache-Control'] = 'no-cache'
-        #         response.headers['Content-Type'] = 'video/mp4'
-        #         response.headers['Accept-Ranges'] = 'bytes'
-        #         response.headers['Access-Control-Allow-Origin'] = '*'
-        #         response.headers['Content-Disposition'] = 'inline; filename=%s' %videoname
-        #     return response
-
         key = boto.s3.key.Key(bucket)
-        key.key = videoname 
+        videoname = videoname.lower()
+        key.key = videoname
 
         try:
             key.open_read()
@@ -63,11 +49,11 @@ class Videos:
             file_contents = data_file.read()
 
             # Use Boto to upload the file to the S3 bucket
-            if len(videoname)>1:
-                k.key = videoname
-            else:
-                k.key = data_file.filename
+            if len(videoname)<=1:
+                videoname = data_file.filename
 
+            videoname = videoname.lower()
+            k.key = videoname
             print "Uploading some data to bucket with key: " + k.key
             sent = k.set_contents_from_string(file_contents)
 
@@ -137,3 +123,19 @@ class Videos:
                 }
 
         return jsonify(results)
+
+
+# ALTERNATE WAY OF GETTING A FILE WITH HEADERs
+# key = bucket.get_key(videoname)
+        # key.get_contents_to_filename(videoname)
+        # if key:        
+        #     with open(videoname, 'rb') as f:
+        #         body = f.read()
+        #         response = make_response(body)
+        #         response.headers['Content-Description'] = 'File Transfer'
+        #         response.headers['Cache-Control'] = 'no-cache'
+        #         response.headers['Content-Type'] = 'video/mp4'
+        #         response.headers['Accept-Ranges'] = 'bytes'
+        #         response.headers['Access-Control-Allow-Origin'] = '*'
+        #         response.headers['Content-Disposition'] = 'inline; filename=%s' %videoname
+        #     return response

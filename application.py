@@ -8,7 +8,7 @@ import tempfile
 from decimal import Decimal
 import venues
 import events
-import videos
+import videos, audio3d
 import images
 import decimal
 import flask.json
@@ -87,12 +87,21 @@ def load_image(imagename):
 
 @app.route("/images/upload", methods=['POST'])
 def add_image():
-    #eventname = request.form['image_event_name']
-    #venuename = request.form['image_venue_name']
-
     v = images.Images()
     return v.addImage()
     
+#################---------------------###################
+
+@app.route("/audio/", methods=['GET'])
+def get_audiofilenames():
+    aud = audio3d.Audio3D()
+    return aud.showAudioData()
+
+@app.route('/audio/load/<audiofilename>', methods=['GET'])
+def load_audio(audiofilename):
+    aud = audio3d.Audio3D()
+    return aud.loadAudio(audiofilename)
+
 #################---------------------###################
 
 if __name__=="__main__":

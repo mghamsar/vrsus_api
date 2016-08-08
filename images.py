@@ -1,9 +1,8 @@
 import MySQLdb
-import os, time
+import os, time, json
 import boto, boto.s3.connection
 from flask import jsonify, request, redirect, url_for, Response, make_response
 from config import Config
-import json
 from db import Db
 
 class Images:
@@ -18,7 +17,8 @@ class Images:
         conn = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
         bucket = conn.get_bucket('vrsusimages', validate=False)
         key = boto.s3.key.Key(bucket)
-        key.key = filename 
+        filename = filename.lower()
+        key.key = filename
 
         try:
             key.open_read()
@@ -90,12 +90,12 @@ class Images:
             file_contents = data_file.read()
             size = len(file_contents)
 
-            if len(imagename)>1:
-                k.key = imagename
-            else:
-                k.key = data_file.filename
-            print "Uploading some data to bucket with key: " + k.key
+            if len(imagename)<=1:
+                imagename = data_file.filename
 
+            imagename = imagename.lower()
+            k.key = imagename
+            print "Uploading some data to bucket with key: " + k.key
             sent = k.set_contents_from_string(file_contents)
 
             if sent == size:
