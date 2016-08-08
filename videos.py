@@ -79,8 +79,10 @@ class Videos:
 
         if not data:
             if eventname is not None and eventtype is not None and eventcategory is not None:
-                addquery = "INSERT INTO videos VALUES ('','"+videoname+"','"+eventname+"','"+eventname+"','"+now+"','"+now+"');"
-            
+                addquery = "INSERT INTO videos(id,name,type,event_name,date_added,date_updated,category) VALUES \
+                ('','"+videoname+"','"+eventtype+"','"+eventname+"','"+now+"','"+now+"','"+eventcategory+"');"
+                dbi.addQuery(addquery);
+
             else:
                 addquery = "INSERT INTO videos(id,name,date_added,date_updated) VALUES ('','"+videoname+"','"+now+"','"+now+"');"
                 print addquery
