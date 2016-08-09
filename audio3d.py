@@ -12,12 +12,23 @@ class Audio3D:
             else:
                 raise TypeError
 
+    def showAudioData(self):
+        conn = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
+        bucket = conn.get_bucket('3daudiofiles', validate=False)
 
-    def getAudio(self,filename):
+        results = {}
+        for i, key in enumerate(bucket.list()):
+            results[i] = key.name.encode('utf-8')
+
+        return jsonify(results)
+
+    def loadAudio(self,filename):
         conn = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
         bucket = conn.get_bucket('3daudiofiles', validate=False)
         key = boto.s3.key.Key(bucket)
-        key.key = filename 
+
+        filename = filename.lower()
+        key.key = filename
 
         try:
             key.open_read()
@@ -25,5 +36,3 @@ class Audio3D:
             return Response(key, headers=headers)
         except boto.exception.S3ResponseError as e:
             return Response(e.body, status=e.status, headers=key.resp.getheaders())
-
-    

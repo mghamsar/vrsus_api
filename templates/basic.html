@@ -1,3 +1,17 @@
+<!doctype html>
+
+<style type="text/css">
+
+.videosection {
+    background-color: #ccffcc;
+    margin: 0 0;
+}
+
+
+
+</style>
+
+
 <h3>Welcome to the vrsus api</h3> 
 <h2> Get a Video </h2> 
 <form action="download" method="post">
@@ -5,15 +19,43 @@
 	<input type="submit" value="Submit">
 </form>
 
+<hr>
+
+<section class="videosection">
 <h2> Add a new Video </h2> 
 <form action="videos/upload" method="post" enctype="multipart/form-data">
-    Video Name: <input type="text" name="video_name"></br><!-- value="Eg. jam_session_01.mp3"><br>-->
-    Event Name: <input type="text" name="event_name"></br><!-- value="Eg. hackney Festival"><br>-->
-    Venue Name: <input type="text" name="venue_name"></br><!-- value="Eg. Sonos studios"><br>-->
-    <input type="file" name="file[]" multiple>
-    <input type="submit">
-</form>
+    Video Name: <input type="text" name="video_name" required></br><!-- value="Eg. jam_session_01.mp3"><br>-->
+    Event Name: <input type="text" name="event_name" required></br><!-- value="Eg. hackney Festival"><br>-->
+    Type: <input type="text" name="event_type" required></br> <p> types include: presentation, exhibition, concert </p>
+    <p> Category: </p>
+    <div class="dropdown">
+        <select name="event_category" id="categories_dropdown" class="dropdown-content" onchange="sel()">
+            {% for message in videos %}
+                <option value={{ videos[message]['category'] }}>{{ videos[message]['category'] }}</option>
+            {% endfor %}
+        </select>
+        <input style="width:100px; float:left;" type="text" name="event_category2" id="event_category2" required></br>
+    </div>
 
+    <script type="text/javascript">
+        function myFunction(){
+            document.getElementById("categories_dropdown").classList.toggle("show");
+        }
+
+        function sel(){
+            e = document.getElementById("categories_dropdown")
+            document.getElementById("event_category2").value = e.options[e.selectedIndex].value;;
+        }
+    </script>
+    
+    </br>
+    
+    <input type="file" name="file[]" multiple>
+    <input type="submit" width="48" height="48">
+</form>
+</section>
+
+<hr>
 
 <h2> Add a new Image </h2> 
 <form action="images/upload" method="post" enctype="multipart/form-data">

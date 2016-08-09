@@ -8,7 +8,7 @@ import tempfile
 from decimal import Decimal
 import venues
 import events
-import videos
+import videos, audio3d
 import images
 import decimal
 import flask.json
@@ -25,7 +25,9 @@ class JSONEncoder(flask.json.JSONEncoder):
 
 @app.route("/")
 def index():
-    return render_template('basic.html')
+    v = videos.Videos()
+    data = v.getVideos(template=True)
+    return render_template('basic.html', videos = data)
 
 @app.route('/download', methods=['POST'])
 def download():
@@ -46,12 +48,12 @@ def get_video(videoname):
 
 @app.route("/videos/upload", methods=['POST'])
 def add_video():
-    videoname = request.form['video_name']
-    eventname = request.form['event_name']
-    venuename = request.form['venue_name']
+    #videoname = request.form['video_name']
+    #eventname = request.form['event_name']
+    #venuename = request.form['venue_name']
 
     v = videos.Videos()
-    return v.addVideo(videoname)
+    return v.addVideo()
 
 ##################-------------------------###################
 
@@ -87,12 +89,21 @@ def load_image(imagename):
 
 @app.route("/images/upload", methods=['POST'])
 def add_image():
-    #eventname = request.form['image_event_name']
-    #venuename = request.form['image_venue_name']
-
     v = images.Images()
     return v.addImage()
     
+#################---------------------###################
+
+@app.route("/audio/", methods=['GET'])
+def get_audiofilenames():
+    aud = audio3d.Audio3D()
+    return aud.showAudioData()
+
+@app.route('/audio/load/<audiofilename>', methods=['GET'])
+def load_audio(audiofilename):
+    aud = audio3d.Audio3D()
+    return aud.loadAudio(audiofilename)
+
 #################---------------------###################
 
 if __name__=="__main__":
