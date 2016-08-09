@@ -18,15 +18,20 @@ class Videos:
         bucket = s3.get_bucket('vrsuscovideos')
         key = boto.s3.key.Key(bucket)
         videoname = videoname.lower()
-        key.key = videoname
 
-        try:
-            key.open_read()
-            headers = dict(key.resp.getheaders())
-            #headers['content-type'] = 'video/mp4'
-            return Response(key, headers=headers)
-        except boto.exception.S3ResponseError as e:
-            return Response(e.body, status=e.status, headers=key.resp.getheaders())   
+        for i, key in enumerate(bucket.list()):
+            if key.name == videoname:
+                key.key = videoname
+
+                try:
+                    key.open_read()
+                    headers = dict(key.resp.getheaders())
+                    #headers['content-type'] = 'video/mp4'
+                    return Response(key, headers=headers)
+                except boto.exception.S3ResponseError as e:
+                    return Response(e.body, status=e.status, headers=key.resp.getheaders())
+        
+        return "Video not found on server"
 
     def addVideo(self,videoname=None, eventname=None, venuename=None):
         s3 = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
