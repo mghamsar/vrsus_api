@@ -80,34 +80,73 @@ class Videos:
         now = time.strftime('%Y-%m-%d')
         query = "SELECT name from videos where name='"+videoname+"';"
         dbi = Db();
-        data = dbi.getQuery(query);
+        videodata = dbi.getQuery(query);
 
-        if not data:
-            if eventname is not None and eventtype is not None and eventcategory is not None:
-                addquery = "INSERT INTO videos(id,name,type,event_name,date_added,date_updated,category) VALUES \
-                ('','"+videoname+"','"+eventtype+"','"+eventname+"','"+now+"','"+now+"','"+eventcategory+"');"
-                dbi.addQuery(addquery);
+        eventData = self.updateEvent(eventname,eventtype,eventcategory)
+        print "EVENT ID", eventData
+        event_id, event_name = eventData[0]
 
-            else:
-                addquery = "INSERT INTO videos(id,name,date_added,date_updated) VALUES ('','"+videoname+"','"+now+"','"+now+"');"
+        
+        if videodata:
+            if eventtype is not None and eventcategory is not None:
+                addquery = "UPDATE videos SET event_id="+str(event_id)+", event_name='"+event_name+"', type='"+eventtype+"', category='"+eventcategory+"',\
+                date_updated='"+now+"' WHERE name='"+videoname+"';"
+
                 print addquery
                 dbi.addQuery(addquery);
-
-        else:
-            if eventname is not None and eventtype is not None and eventcategory is not None:
-                addquery = "UPDATE videos SET event_name='"+eventname+"', type='"+eventtype+"', category='"+eventcategory+"',\
-                 date_updated='"+now+"' WHERE name='"+videoname+"';"
+                  
+            elif eventtype is not None: 
+                addquery = "UPDATE videos SET event_id="+str(event_id)+", event_name='"+event_name+"', type='"+eventtype+"', date_updated='"+now+"' WHERE name='"+videoname+"';"
                 
                 print addquery
                 dbi.addQuery(addquery);
 
-            elif eventname is not None:
-                print "EVENT NAME", eventname
-                addquery = "UPDATE videos SET event_name='"+eventname+"' WHERE name='"+videoname+"';"
-
-                dbi.addQuery(addquery);
-
+        else:
+            if eventtype is not None and eventcategory is not None:
+                addvideoquery = "INSERT INTO videos VALUES \
+                ('','"+videoname+"','"+eventtype+"',"+str(event_id)+",'"+event_name+"','"+now+"','"+now+"','"+eventcategory+"');"
+                dbi.addQuery(addvideoquery);
+            elif eventtype is not None:
+                addvideoquery = "INSERT INTO videos VALUES \
+                ('','"+videoname+"','"+eventtype+"',"+str(event_id)+",'"+event_name+"','"+now+"','"+now+"',NULL);"
+                dbi.addQuery(addvideoquery);
+        
         return 0
+
+    def updateEvent(self, eventname, eventtype=None, eventcategory=None):
+        
+        now = time.strftime('%Y-%m-%d')
+        query = "SELECT event_id,event_name from events where event_name='"+eventname+"';"
+        dbi = Db();
+        data = dbi.getQuery(query);
+
+        if data: 
+            id, name = data[0]
+            print id, name
+
+            if eventtype is not None and eventcategory is not None:
+                addeventquery = "UPDATE events SET type='"+eventtype+"', category='"+eventcategory+"' WHERE event_id="+str(id)+";"
+                dbi.addQuery(addeventquery);
+
+            elif eventtype is not None:
+                addeventquery = "UPDATE events SET type='"+eventtype+"' WHERE event_id="+str(id)+";"
+                dbi.addQuery(addeventquery);
+
+        else:
+            if eventtype is not None and eventcategory is not None:
+                addeventquery = "INSERT INTO events (event_name,type,category,date_added,date_updated)\
+                VALUES ('"+eventname+"','"+eventtype+"','"+eventcategory+"','"+now+"','"+now+"');"
+                id2 = dbi.addQuery(addeventquery);
+            
+            elif eventtype is not None:
+                addeventquery = "INSERT INTO events (event_name,type,date_added,date_updated) VALUES ('"+eventname+"','"+eventtype+"','"+now+"','"+now+"');"
+                id2 = dbi.addQuery(addeventquery);
+
+            query = "SELECT event_id,event_name from events where event_id="+str(id2)+";"
+            data = dbi.getQuery(query);
+
+        return data
+
 
     def getVideos(self, template=False):
         

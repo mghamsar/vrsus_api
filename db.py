@@ -55,4 +55,4 @@ class Db:
             cursor.close()
             dbConnect.close()
 
-        return 0
+        return cursor.lastrowid
