@@ -47,7 +47,7 @@ class Audio3D:
         audiofilename = request.form['audio_name'] if request.form['audio_name'] is not None else None
 
         for data_file in data_files:
-            print "Dasta file "+ data_file.filename
+            print "Data file "+ str(data_file.filename)
             try:
                 size = os.fstat(data_file.fileno()).st_size
             except:
