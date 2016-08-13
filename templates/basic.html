@@ -8,6 +8,13 @@
 }
 
 
+.audiosection {
+    background-color: #ff8080;
+    margin: 0 0;
+}
+
+
+
 
 </style>
 
@@ -47,15 +54,27 @@
             document.getElementById("event_category2").value = e.options[e.selectedIndex].value;;
         }
     </script>
-    
     </br>
-    
     <input type="file" name="file[]" multiple>
     <input type="submit" width="48" height="48">
 </form>
 </section>
 
 <hr>
+
+<section class="audiosection">
+<h2> Add a new 3D Audio File </h2> 
+<form action="audio/upload" method="post" enctype="multipart/form-data">
+    <span> Use the same file name as the associated video file and include the .tbe extension </span> </br>
+    Audio File Name (including the extention .tbe): <input type="text" name="audio_name"></br> 
+
+    <!--Associated Video File Name: <input type="text" name="audio_video_name"></br>--><!-- value="Eg. hackney Festival"><br>-->
+    <input type="file" name="audio[]" multiple>
+    <input type="submit">
+</form>
+
+<hr>
+</section>
 
 <h2> Add a new Image </h2> 
 <form action="images/upload" method="post" enctype="multipart/form-data">

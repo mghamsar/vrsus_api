@@ -48,10 +48,6 @@ def get_video(videoname):
 
 @app.route("/videos/upload", methods=['POST'])
 def add_video():
-    #videoname = request.form['video_name']
-    #eventname = request.form['event_name']
-    #venuename = request.form['venue_name']
-
     v = videos.Videos()
     return v.addVideo()
 
@@ -103,6 +99,11 @@ def get_audiofilenames():
 def load_audio(audiofilename):
     aud = audio3d.Audio3D()
     return aud.loadAudio(audiofilename)
+
+@app.route("/audio/upload", methods=['POST'])
+def add_audio():
+    aud = audio3d.Audio3D()
+    return aud.addAudio()
 
 #################---------------------###################
 
