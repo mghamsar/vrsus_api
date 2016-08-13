@@ -46,15 +46,16 @@ class Videos:
         eventcategory = request.form["event_category"] if request.form["event_category"] is not None else None
 
         for data_file in data_files:
+
+            # Read the contents of the file
+            file_contents = data_file.read()
+            
             try:
                 size = os.fstat(data_file.fileno()).st_size
             except:
                 # Not all file objects implement fileno(), so we fall back on this
-                file.seek(0, os.SEEK_END)
+                data_file.seek(0, os.SEEK_END)
                 size = data_file.tell()
-
-            # Read the contents of the file
-            file_contents = data_file.read()
 
             if videoname is None:
                 videoname = data_file.filename

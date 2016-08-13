@@ -48,15 +48,15 @@ class Audio3D:
 
         for data_file in data_files:
             print "Data file "+ str(data_file.filename)
-            try:
-                size = os.fstat(data_file.fileno()).st_size
-            except:
-                # Not all file objects implement fileno(), so we fall back on this
-                file.seek(0, os.SEEK_END)
-                size = data_file.tell()
 
             # Read the contents of the file
             file_contents = data_file.read()
+
+            try:
+                size = os.fstat(data_file.fileno()).st_size
+            except:
+                data_file.seek(0, os.SEEK_END)
+                size = data_file.tell()
 
             if audiofilename is None or len(audiofilename)<=1:
                 audiofilename = data_file.filename
@@ -69,6 +69,7 @@ class Audio3D:
             # Use Boto to upload the file to the S3 bucket
             print "Uploading some data to bucket "+ str(bucket) + " with key: " + k.key
             sent = k.set_contents_from_string(file_contents)
+            print sent
 
             if sent == size:
                #self.addVideoToDb(audiofilename, eventname, eventtype, eventcategory)
