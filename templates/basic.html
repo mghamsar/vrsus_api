@@ -33,18 +33,41 @@
 <form action="videos/upload" method="post" enctype="multipart/form-data">
     Video Name: <input type="text" name="video_name" required></br><!-- value="Eg. jam_session_01.mp3"><br>-->
     Event Name: <input type="text" name="event_name" required></br><!-- value="Eg. hackney Festival"><br>-->
-    Type: <input type="text" name="event_type" required></br> <p> types include: presentation, exhibition, concert </p>
+    <!--Type: <input type="text" name="event_type" required></br> --><p> types include: presentation, exhibition, concert </p>
+    
+    <p> Type: </p>
+    <div class="dropdown">
+        <select name="event_type" id="types_dropdown" class="dropdown-content" onchange="typeVal()">
+            {% for message in types %}
+                <option value={{ types[message]['type'] }}>{{ types[message]['type']}}</option>-->
+            {% endfor %}
+        </select>
+        <input style="width:100px; float:left;" type="text" name="event_type2" id="event_type2" required></br>
+    </div>
+
     <p> Category: </p>
     <div class="dropdown">
         <select name="event_category" id="categories_dropdown" class="dropdown-content" onchange="sel()">
-            {% for message in videos %}
-                <option value={{ videos[message]['category'] }}>{{ videos[message]['category'] }}</option>
+            {% for message in categories %}
+                <option value={{ categories[message]['cat'] }}>{{ categories[message]['cat']}}</option>-->
             {% endfor %}
         </select>
         <input style="width:100px; float:left;" type="text" name="event_category2" id="event_category2" required></br>
     </div>
 
     <script type="text/javascript">
+
+        function typeToggle(){
+            document.getElementById("types_dropdown").classList.toggle("show");
+        }
+
+        function typeVal(){
+            e = document.getElementById("types_dropdown")
+            document.getElementById("event_type2").value = e.options[e.selectedIndex].value;;
+        }
+
+
+
         function myFunction(){
             document.getElementById("categories_dropdown").classList.toggle("show");
         }

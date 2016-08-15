@@ -1,10 +1,10 @@
 import MySQLdb
 import boto, boto.s3.connection
+import os, time, json
 from flask import jsonify, request, Response
 from config import Config
 import config
 from db import Db
-
 
 class Events:
     def __init__(self):
@@ -54,3 +54,37 @@ class Events:
                     }
 
         return jsonify(results)
+
+    def updateEvent(self, eventname, eventtype=None, eventcategory=None):
+
+        now = time.strftime('%Y-%m-%d')
+        query = "SELECT event_id,event_name from events where event_name='"+eventname+"';"
+        dbi = Db();
+        data = dbi.getQuery(query);
+
+        if data:
+            id, name = data[0]
+            print id, name
+
+            if eventtype is not None and eventcategory is not None:
+                addeventquery = "UPDATE events SET type='"+eventtype+"', category='"+eventcategory+"' WHERE event_id="+str(id)+";"
+                dbi.addQuery(addeventquery);
+
+            elif eventtype is not None:
+                addeventquery = "UPDATE events SET type='"+eventtype+"' WHERE event_id="+str(id)+";"
+                dbi.addQuery(addeventquery);
+
+        else:
+            if eventtype is not None and eventcategory is not None:
+                addeventquery = "INSERT INTO events (event_name,type,category,date_added,date_updated)\
+                VALUES ('"+eventname+"','"+eventtype+"','"+eventcategory+"','"+now+"','"+now+"');"
+                id2 = dbi.addQuery(addeventquery);
+
+            elif eventtype is not None:
+                addeventquery = "INSERT INTO events (event_name,type,date_added,date_updated) VALUES ('"+eventname+"','"+eventtype+"','"+now+"','"+now+"');"
+                id2 = dbi.addQuery(addeventquery);
+
+            query = "SELECT event_id,event_name from events where event_id="+str(id2)+";"
+            data = dbi.getQuery(query);
+
+        return data

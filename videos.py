@@ -5,8 +5,12 @@ from boto.s3.key import Key
 from flask import jsonify, url_for, request, redirect, Response,render_template
 from config import Config
 from db import Db
+import events
 
 class Videos:
+
+    event = events.Events();
+
     def date_handler(self, obj):
             if hasattr(obj, 'isoformat'):
                 return obj.isoformat()
@@ -83,7 +87,7 @@ class Videos:
         dbi = Db();
         videodata = dbi.getQuery(query);
 
-        eventData = self.updateEvent(eventname,eventtype,eventcategory)
+        eventData = self.event.updateEvent(eventname,eventtype,eventcategory)
         print "EVENT ID", eventData
         event_id, event_name = eventData[0]
 
@@ -105,48 +109,14 @@ class Videos:
         else:
             if eventtype is not None and eventcategory is not None:
                 addvideoquery = "INSERT INTO videos VALUES \
-                ('','"+videoname+"','"+eventtype+"',"+str(event_id)+",'"+event_name+"','"+now+"','"+now+"','"+eventcategory+"');"
+                (NULL,'"+videoname+"','"+eventtype+"',"+str(event_id)+",'"+event_name+"','"+now+"','"+now+"','"+eventcategory+"');"
                 dbi.addQuery(addvideoquery);
             elif eventtype is not None:
                 addvideoquery = "INSERT INTO videos VALUES \
-                ('','"+videoname+"','"+eventtype+"',"+str(event_id)+",'"+event_name+"','"+now+"','"+now+"',NULL);"
+                (NULL,'"+videoname+"','"+eventtype+"',"+str(event_id)+",'"+event_name+"','"+now+"','"+now+"',NULL);"
                 dbi.addQuery(addvideoquery);
         
         return 0
-
-    def updateEvent(self, eventname, eventtype=None, eventcategory=None):
-        
-        now = time.strftime('%Y-%m-%d')
-        query = "SELECT event_id,event_name from events where event_name='"+eventname+"';"
-        dbi = Db();
-        data = dbi.getQuery(query);
-
-        if data: 
-            id, name = data[0]
-            print id, name
-
-            if eventtype is not None and eventcategory is not None:
-                addeventquery = "UPDATE events SET type='"+eventtype+"', category='"+eventcategory+"' WHERE event_id="+str(id)+";"
-                dbi.addQuery(addeventquery);
-
-            elif eventtype is not None:
-                addeventquery = "UPDATE events SET type='"+eventtype+"' WHERE event_id="+str(id)+";"
-                dbi.addQuery(addeventquery);
-
-        else:
-            if eventtype is not None and eventcategory is not None:
-                addeventquery = "INSERT INTO events (event_name,type,category,date_added,date_updated)\
-                VALUES ('"+eventname+"','"+eventtype+"','"+eventcategory+"','"+now+"','"+now+"');"
-                id2 = dbi.addQuery(addeventquery);
-            
-            elif eventtype is not None:
-                addeventquery = "INSERT INTO events (event_name,type,date_added,date_updated) VALUES ('"+eventname+"','"+eventtype+"','"+now+"','"+now+"');"
-                id2 = dbi.addQuery(addeventquery);
-
-            query = "SELECT event_id,event_name from events where event_id="+str(id2)+";"
-            data = dbi.getQuery(query);
-
-        return data
 
 
     def getVideos(self, template=False):
@@ -187,6 +157,36 @@ class Videos:
             return json.loads(json.dumps(results))#json.dumps(results, sort_keys=True,)
 
         return jsonify(results)
+
+    def getCategories(self):
+        query = "SELECT DISTINCT category from videos;"
+        dbi = Db();
+        data = dbi.getQuery(query);
+
+        results = {}
+        if len(data) >= 1:            
+            for row, values in enumerate(data):
+                results[row] = {
+                    'cat':values[0],
+                }
+        
+        return json.loads(json.dumps(results))
+
+
+    def getTypes(self):
+        query = "SELECT DISTINCT type from videos;"
+        dbi = Db();
+        data = dbi.getQuery(query);
+
+        results = {}
+        if len(data) >= 1:            
+            for row, values in enumerate(data):
+                results[row] = {
+                    'type':values[0],
+                }
+        
+        return json.loads(json.dumps(results))
+
 
 # ALTERNATE WAY OF GETTING A FILE WITH HEADERs
 # key = bucket.get_key(videoname)

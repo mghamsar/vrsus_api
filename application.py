@@ -12,10 +12,14 @@ import videos, audio3d
 import images
 import decimal
 import flask.json
+#from flask_cdn import CDN
 
 application = app = Flask(__name__,static_folder='static', static_url_path='')
 app.config.from_object('config.Config')
 app.json_encoder = JSONEncoder
+#app.config['CDN_DOMAIN'] = 'd396uhl77uxno9.cloudfront.net'
+#app.config['CDN_ENDPOINTS'] = ""
+#cdn = CDN()
 
 class JSONEncoder(flask.json.JSONEncoder):
     def default(self, obj):
@@ -27,7 +31,9 @@ class JSONEncoder(flask.json.JSONEncoder):
 def index():
     v = videos.Videos()
     data = v.getVideos(template=True)
-    return render_template('basic.html', videos = data)
+    categories = v.getCategories()
+    types=v.getTypes()
+    return render_template('basic.html', videos = data, categories = categories, types=types)
 
 @app.route('/download', methods=['POST'])
 def download():
