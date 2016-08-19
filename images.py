@@ -14,21 +14,26 @@ class Images:
                 raise TypeError
 
     def loadImage(self, filename):
-        conn = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
-        bucket = conn.get_bucket('vrsusimages', validate=False)
-        key = boto.s3.key.Key(bucket)
-        filename = filename.lower()
-        key.key = filename
 
-        try:
-            key.open_read()
-            headers = dict(key.resp.getheaders())
-            if headers['content-type'] is not 'image/jpeg': 
-                headers['content-type'] = 'image/jpeg'
+        url = "http://d396uhl77uxno9.cloudfront.net"+"/"+filename
+        
+        return redirect(url, code=302)
+        
+        # conn = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
+        # bucket = conn.get_bucket('vrsusimages', validate=False)
+        # key = boto.s3.key.Key(bucket)
+        # filename = filename.lower()
+        # key.key = filename
 
-            return Response(key, headers=headers)
-        except boto.exception.S3ResponseError as e:
-            return Response(e.body, status=e.status, headers=key.resp.getheaders())
+        # try:
+        #     key.open_read()
+        #     headers = dict(key.resp.getheaders())
+        #     if headers['content-type'] is not 'image/jpeg': 
+        #         headers['content-type'] = 'image/jpeg'
+
+        #     return Response(key, headers=headers)
+        # except boto.exception.S3ResponseError as e:
+        #     return Response(e.body, status=e.status, headers=key.resp.getheaders())
 
     def getImageNames(self):
         
@@ -55,10 +60,12 @@ class Images:
 
         dbi = Db();
         data = dbi.getQuery(query);
+
+        print(data)
     
         results = {}
         responses = []
-        if len(data) >= 1:
+        if data and len(data) >= 1:
             for row, values in enumerate(data):
                 results[row] = {
                     'id':values[0],
