@@ -19,7 +19,7 @@ class Events:
 
         query = "SELECT e.*, v.name, i.name from events as e \
         LEFT JOIN videos as v on e.event_id=v.event_id \
-        LEFT JOIN images as i on e.event_id=i.event_id"
+        LEFT JOIN images as i on v.id=i.video_id"
 
         if name is not None and category is not None:
             query = query + " where e.event_name='"+name+"' AND e.category='"+category+"'"
