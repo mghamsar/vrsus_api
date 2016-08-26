@@ -4,8 +4,13 @@ import boto, boto.s3.connection
 from flask import jsonify, request, redirect, url_for, Response, make_response
 from config import Config
 from db import Db
+import events
+import videos
 
 class Images:
+
+    event = events.Events();
+    video = videos.Videos();
 
     def date_handler(self, obj):
             if hasattr(obj, 'isoformat'):
@@ -114,6 +119,10 @@ class Images:
         query = "SELECT name from images where name='"+imagename+"';"
         dbi = Db();
         data = dbi.getQuery(query);
+
+        eventData = self.event.updateEvent(eventname,eventtype,eventcategory)
+        print "EVENT ID", eventData
+        event_id, event_name = eventData[0]
 
         if not data:
             addquery = "INSERT INTO images(id,name,date_added,date_updated) VALUES ('','"+imagename+"','"+now+"','"+now+"');"
