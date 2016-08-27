@@ -91,8 +91,6 @@
 <form action="audio/upload" method="post" enctype="multipart/form-data">
     <span> Use the same file name as the associated video file and include the .tbe extension </span> </br>
     Audio File Name (including the extention .tbe): <input type="text" name="audio_name"></br> 
-
-    <!--Associated Video File Name: <input type="text" name="audio_video_name"></br>--><!-- value="Eg. hackney Festival"><br>-->
     <input type="file" name="audio[]" multiple>
     <input type="submit">
 </form>
@@ -102,9 +100,8 @@
 
 <h2> Add a new Image </h2> 
 <form action="images/upload" method="post" enctype="multipart/form-data">
-    Image File Name (including extention like .jpg): <input type="text" name="image_name"></br><!-- value="Eg. jam_session_01.mp3"><br>-->
-    Event Name: <input type="text" name="image_event_name"></br><!-- value="Eg. hackney Festival"><br>-->
-    Venue Name: <input type="text" name="image_venue_name"></br><!-- value="Eg. Sonos studios"><br>-->
+    Image File Name (including extention like .jpg): <input type="text" name="image_name"></br>
+    Event Name: <input type="text" name="image_event_name"></br>
     <input type="file" name="image[]" multiple>
     <input type="submit">
 </form>
