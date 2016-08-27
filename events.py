@@ -16,6 +16,7 @@ class Events:
         category = request.args.get('category') if request.args.get('category') is not None else None
         count = request.args.get('count') if request.args.get('count') is not None else None
         eventType = request.args.get('type') if request.args.get('type') is not None else None
+        venue = request.args.get('venue') if request.args.get('venue') is not None else None
 
         query = "SELECT e.*, v.name, i.name from events as e \
         LEFT JOIN videos as v on e.event_id=v.event_id \
@@ -29,6 +30,8 @@ class Events:
             query = query + " where e.category='"+category+"'"
         elif name is not None:
             query = query + " where e.event_name='"+name+"'"
+        elif venue is not None: 
+            query = query + " WHERE e.venue_name='"+venue+"'"
         
         if count is not None:
              query = query + " LIMIT "+str(count)
@@ -42,7 +45,6 @@ class Events:
         results = {}
         if data is not None and len(data) >= 1:
             for row, values in enumerate(data):
-                print(str(values))
                 results[row] = {
                     'id':values[0],
                     'name':values[1],
@@ -53,6 +55,50 @@ class Events:
                     'videofilename':values[9]
                     }
 
+        print category
+        if category == 'hackneywicked':
+            return self.orderEvents(results)
+
+        else:
+            return jsonify(results)
+
+    def orderEvents(self,events):
+
+        results = {}
+
+        # 1 live_painting
+        # 2 wallis_road_03
+        # 3 mother_studios_01
+        # 4 mother_studios_03
+        # 5 illustration_design
+        # 6 photo_studio
+        # 7 mother_studio_02
+        # 8 micks_garage
+        # 9 parking_lot_01
+
+        for i in range(len(events)):
+            video = events[i]["videofilename"]
+
+            if video == "live_painting.mp4":
+                results[0]=events[i]
+            if video == "wallis_road_03.mp4":
+                results[1]=events[i]
+            if video == "mother_studios_01.mp4":
+                results[2]=events[i]
+            if video == "mother_studios_03.mp4":
+                results[3]=events[i]
+            if video == "illustration_design.mp4":
+                results[4]=events[i]
+            if video == "photo_studio.mp4":
+                results[5]=events[i]
+            if video == "mother_studio_02.mp4":
+                results[6]=events[i]
+            if video == "micks_garage.mp4":
+                results[7]=events[i]
+            if video == "parking_lot_01.mp4":
+                results[8]=events[i]
+
+        #print results
         return jsonify(results)
 
     def updateEvent(self, eventname, eventtype=None, eventcategory=None):
