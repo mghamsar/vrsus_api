@@ -1,9 +1,11 @@
 from app import db
 import datetime
 
-class Images(db.Model):
+class ImagesData(db.Model):
+    
     __tablename__ = "images"
-    id = db.Column(db.Integer, primary_key=True)
+
+    id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(255), index=True, unique=True)
     type = db.Column(db.String(255))
     event_id = db.Column(db.Integer,db.ForeignKey('events.event_id'))
@@ -13,24 +15,55 @@ class Images(db.Model):
     video_id = db.Column(db.Integer)
     position = db.Column(db.Integer, unique=True)
 
-    def __init__(self, name,type,event_id=None):
+    def __init__(self, name, type=None, event_id=None,date_added=None,date_updated=None, category=None, video_id=None,position=None):
         self.name = name
-        self.type = type
-        self.event_id = event_id
+        self.type = type if type is not None else None
+        self.event_id = event_id if event_id is not None else None
+        self.date_added = date_added if date_added is not None else None
+        self.date_updated = date_updated if date_updated is not None else None
+        self.category = category if category is not None else None
+        self.video_id = video_id if video_id is not None else None
+        self.position = position if position is not None else None
+
+    # def __repr__(self):
+    # 	results = {}
+    # 	results['imagename'] = self.name
+    # 	results['type'] = self.type
+    #   return self.name
 
 
-    def __repr__(self):
-        return '<Image %r>' % (self.name)
-
-
-
-class Events(db.Model):
+class EventsData(db.Model):
     __tablename__ = "events"
 
-    event_id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, primary_key=True,unique=True)
+    event_name = db.Column(db.String(255), index=True, unique=True)
+    date = db.Column(db.DateTime,default=datetime.datetime.now())
+    venue_id = db.Column(db.Integer)
+    venue_name = db.Column(db.String(255))
+    type = db.Column(db.String(255))
+    date_added = db.Column(db.DateTime,default=datetime.datetime.now())
+    date_updated = db.Column(db.DateTime,default=datetime.datetime.now())
+    category = db.Column(db.String(255))
 
-    def __init__(self, event_id):
+    def __init__(self, event_id, event_name):
         self.event_id = event_id
+        self.event_name = event_name
+        self.date = date if date is not None else None
+        self.venue_id = venue_id if venue_id is not None else None
+        self.venue_name = venue_name if venue_name is not None else None
+        self.type = type if type is not None else None
+        self.date_added = date_added if date_added is not None else None
+        self.date_updated = date_updated if date_updated is not None else None
+        self.category = category if category is not None else None
 
-    def __repr__(self):
-        return '<Image %r>' % (self.name)
+    # def __repr__(self):
+    #     return self.event_id
+
+
+# class VideosData(db.Model):
+#     __tablename__ = "videos"
+
+
+
+# class VenuesData(db.Model):
+#     __tablename__ = "venues"

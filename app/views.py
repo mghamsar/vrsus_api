@@ -1,14 +1,14 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, jsonify
 from flask.json import JSONEncoder
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 import json, os
-import tempfile
 import decimal
 from config import Config
 import venues, events, images, videos, audio3d
 import flask.json
 from app import app,models,db
+from app import images
 
 class JSONEncoder(flask.json.JSONEncoder):
     def default(self, obj):
@@ -32,17 +32,16 @@ def index():
 #     return get_video(videoname)
 
 
-@app.route('/user')
-def user():
+# @app.route('/user')
+# def user():
 
-    admin = models.Images('test33.jpg')
-    db.session.add(admin)
+#     admin = models.Images('test33.jpg')
+#     db.session.add(admin)
+#     db.session.commit()
 
-    db.session.commit()
-
-    users = models.Images.query.all()
-    print users
-    return str(users)
+#     users = models.Images.query.all()
+#     print users
+#     return str(users)
 
 
 #################-------------------------###################
@@ -86,20 +85,18 @@ def user():
 
 @app.route("/images/", methods=['GET'])
 def get_images():
-    #img = images.Images()
-    #return img.getImageNames()
-    images = models.Images.query.all()
-    return jsonify(images)
+    img = images.Images()
+    return img.getImageNames()
 
 # @app.route('/images/load/<imagename>', methods=['GET'])
 # def load_image(imagename):
 #     img = images.Images()
 #     return img.loadImage(imagename)
 
-# @app.route("/images/upload", methods=['POST'])
-# def add_image():
-#     v = images.Images()
-#     return v.addImage()
+@app.route("/images/upload", methods=['POST'])
+def add_image():
+    img = images.Images()
+    return img.addImage()
     
 # #################---------------------###################
 
