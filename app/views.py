@@ -18,7 +18,6 @@ class JSONEncoder(flask.json.JSONEncoder):
 
 
 @app.route("/")
-@app.route('/index')
 def index():
     #v = videos.Videos()
     #data = v.getVideos(template=True)
