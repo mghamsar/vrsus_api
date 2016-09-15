@@ -18,13 +18,13 @@ class JSONEncoder(flask.json.JSONEncoder):
 
 
 @app.route("/")
-@app.route("/index")
+@app.route("/index/")
 def index1():
     #v = videos.Videos()
     #data = v.getVideos(template=True)
     #categories = v.getCategories()
     #types=v.getTypes()
-    return render_template('basic.html')#, videos = data, categories = categories, types=types)
+    return "Hello" #render_template('basic.html')#, videos = data, categories = categories, types=types)
 
 # @app.route('/download', methods=['POST'])
 # def download():
