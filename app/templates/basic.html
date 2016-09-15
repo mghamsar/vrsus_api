@@ -1,0 +1,113 @@
+<!doctype html>
+
+<style type="text/css">
+
+.videosection {
+    background-color: #ccffcc;
+    margin: 0 0;
+}
+
+
+.audiosection {
+    background-color: #ff8080;
+    margin: 0 0;
+}
+
+
+
+
+</style>
+
+
+<h3>Welcome to the vrsus api</h3> 
+<h2> Get a Video </h2> 
+<form action="download" method="post">
+	Video Name: <input type="text" name="video_name"><br>
+	<input type="submit" value="Submit">
+</form>
+
+<hr>
+
+<section class="videosection">
+<h2> Add a new Video </h2> 
+<form action="videos/upload" method="post" enctype="multipart/form-data">
+    <p> Include extension in Video Name, it's the file name </p>
+    Video Name: <input type="text" name="video_name" required></br><!-- value="Eg. jam_session_01.mp3"><br>-->
+    Event Name: <input type="text" name="event_name" required></br><!-- value="Eg. hackney Festival"><br>-->
+    <!--Type: <input type="text" name="event_type" required></br> --><p> types include: presentation, exhibition, concert </p>
+    
+    <p> Type: </p>
+    <div class="dropdown">
+        <select name="event_type" id="types_dropdown" class="dropdown-content" onchange="typeVal()">
+            {% for message in types %}
+                <option value={{ types[message]['type'] }}>{{ types[message]['type']}}</option>-->
+            {% endfor %}
+        </select>
+        <input style="width:100px; float:left;" type="text" name="event_type2" id="event_type2" required></br>
+    </div>
+
+    <p> Category: </p>
+    <div class="dropdown">
+        <select name="event_category" id="categories_dropdown" class="dropdown-content" onchange="sel()">
+            {% for message in categories %}
+                <option value={{ categories[message]['cat'] }}>{{ categories[message]['cat']}}</option>-->
+            {% endfor %}
+        </select>
+        <input style="width:100px; float:left;" type="text" name="event_category2" id="event_category2" required></br>
+    </div>
+
+    <script type="text/javascript">
+
+        function typeToggle(){
+            document.getElementById("types_dropdown").classList.toggle("show");
+        }
+
+        function typeVal(){
+            e = document.getElementById("types_dropdown")
+            document.getElementById("event_type2").value = e.options[e.selectedIndex].value;;
+        }
+
+
+
+        function myFunction(){
+            document.getElementById("categories_dropdown").classList.toggle("show");
+        }
+
+        function sel(){
+            e = document.getElementById("categories_dropdown")
+            document.getElementById("event_category2").value = e.options[e.selectedIndex].value;;
+        }
+    </script>
+    </br>
+    <input type="file" name="file[]" multiple>
+    <input type="submit" width="48" height="48">
+</form>
+</section>
+
+<hr>
+
+<section class="audiosection">
+<h2> Add a new 3D Audio File </h2> 
+<form action="audio/upload" method="post" enctype="multipart/form-data">
+    <span> Use the same file name as the associated video file and include the .tbe extension </span> </br>
+    Audio File Name (including the extention .tbe): <input type="text" name="audio_name"></br> 
+    <input type="file" name="audio[]" multiple>
+    <input type="submit">
+</form>
+
+<hr>
+</section>
+
+<h2> Add a new Image </h2> 
+<form action="images/upload" method="post" enctype="multipart/form-data">
+    Image File Name (including extention like .jpg): <input type="text" name="image_name"></br>
+    Event Name: <input type="text" name="image_event_name"></br>
+    <input type="file" name="image[]" multiple>
+    <input type="submit">
+</form>
+
+
+<h2> Current events list </h2> 
+
+
+<h2> Current venues list </h2> 
