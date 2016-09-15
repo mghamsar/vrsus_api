@@ -18,7 +18,8 @@ class JSONEncoder(flask.json.JSONEncoder):
 
 
 @app.route("/")
-def index():
+@app.route("/index")
+def index1():
     #v = videos.Videos()
     #data = v.getVideos(template=True)
     #categories = v.getCategories()
@@ -29,19 +30,6 @@ def index():
 # def download():
 #     videoname = request.form['video_name']
 #     return get_video(videoname)
-
-
-# @app.route('/user')
-# def user():
-
-#     admin = models.Images('test33.jpg')
-#     db.session.add(admin)
-#     db.session.commit()
-
-#     users = models.Images.query.all()
-#     print users
-#     return str(users)
-
 
 #################-------------------------###################
 
