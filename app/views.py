@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 import json, os
 import decimal
 from config import Config
-import venues, events, videos, audio3d
+#import venues, events, videos, audio3d
 import flask.json
 from app import app,models,db
 from app import images
