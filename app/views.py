@@ -10,13 +10,6 @@ import flask.json
 from app import app,models,db
 from app import images
 
-# class JSONEncoder(flask.json.JSONEncoder):
-#     def default(self, obj):
-#         if isinstance(obj, decimal.Decimal):
-#             return str(obj)
-#         return super(MyJSONEncoder, self).default(obj)
-
-
 @app.route("/")
 @app.route("/index/")
 def index1():
