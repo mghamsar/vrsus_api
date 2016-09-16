@@ -1,4 +1,4 @@
-from app import app,models,db
+from app import models,db
 from flask import request, jsonify, redirect, url_for
 
 import boto, boto.s3.connection
