@@ -1,5 +1,5 @@
 from flask import Flask, request, redirect, render_template, jsonify
-from flask.json import JSONEncoder
+#from flask.json import JSONEncoder
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 import json, os
@@ -10,11 +10,11 @@ import flask.json
 from app import app,models,db
 from app import images
 
-class JSONEncoder(flask.json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, decimal.Decimal):
-            return str(obj)
-        return super(MyJSONEncoder, self).default(obj)
+# class JSONEncoder(flask.json.JSONEncoder):
+#     def default(self, obj):
+#         if isinstance(obj, decimal.Decimal):
+#             return str(obj)
+#         return super(MyJSONEncoder, self).default(obj)
 
 
 @app.route("/")
@@ -24,7 +24,7 @@ def index1():
     #data = v.getVideos(template=True)
     #categories = v.getCategories()
     #types=v.getTypes()
-    return "Hello" #render_template('basic.html')#, videos = data, categories = categories, types=types)
+    return render_template('basic.html')#, videos = data, categories = categories, types=types)
 
 # @app.route('/download', methods=['POST'])
 # def download():
