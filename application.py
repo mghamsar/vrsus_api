@@ -1,4 +1,5 @@
-from app import app, db
+from app import application
+import config
 
-application = app
-application.run(debug=True)
+if __name__ == '__main__':
+	application.run(debug=config.APP_DEBUG)
