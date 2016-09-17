@@ -8,7 +8,7 @@ from flask import Flask, request, redirect, render_template, jsonify
 #import flask.json
 from app import application
 #from models import ImagesData
-#from app import images
+from app import images
 
 @application.route("/")
 @application.route("/index/")
@@ -63,20 +63,20 @@ def index1():
 
 # ##################-------------------------###################
 
-# @app.route("/images/", methods=['GET'])
-# def get_images():
-#     img = images.Images()
-#     return img.getImageNames()
+@application.route("/images/", methods=['GET'])
+def get_images():
+    img = images.Images()
+    return img.getImageNames()
 
-# @app.route('/images/load/<imagename>', methods=['GET'])
-# def load_image(imagename):
-#     img = images.Images()
-#     return img.loadImage(imagename)
+@application.route('/images/load/<imagename>', methods=['GET'])
+def load_image(imagename):
+    img = images.Images()
+    return img.loadImage(imagename)
 
-# @app.route("/images/upload", methods=['POST'])
-# def add_image():
-#     img = images.Images()
-#     return img.addImage()
+@application.route("/images/upload", methods=['POST'])
+def add_image():
+    img = images.Images()
+    return img.addImage()
     
 # #################---------------------###################
 
