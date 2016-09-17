@@ -8,3 +8,8 @@ MySQL-python==1.2.5
 Werkzeug==0.11.10
 wheel==0.24.0
 Flask-SQLAlchemy===2.1
+SQLAlchemy==0.7.9
+Tempita==0.5.1
+decorator==3.4.0
+sqlalchemy-migrate==0.7.2
+wsgiref==0.1.2
