@@ -10,8 +10,8 @@ from app import application
 #from models import ImagesData
 #from app import images
 
-@app.route("/")
-@app.route("/index/")
+@application.route("/")
+@application.route("/index/")
 def index1():
     #v = videos.Videos()
     #data = v.getVideos(template=True)

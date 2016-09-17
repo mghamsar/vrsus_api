@@ -1,8 +1,7 @@
 #!flask/bin/python
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from config import Config
+from flask.ext.sqlalchemy import SQLAlchemy
 import os
 
 # The WSGI configuration on Elastic Beanstalk requires
@@ -10,7 +9,7 @@ import os
 
 application = Flask(__name__)
 application.config.from_object('config')
-application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+#application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 application.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://mghamsar:vrsus2016@vrsus.c7e2fotesw6y.us-east-1.rds.amazonaws.com/vrsus_dev'
 db = SQLAlchemy(application)
 
