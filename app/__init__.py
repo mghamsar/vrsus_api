@@ -1,7 +1,7 @@
 #!flask/bin/python
 
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 import os
 
 # The WSGI configuration on Elastic Beanstalk requires
