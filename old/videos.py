@@ -118,7 +118,6 @@ class Videos:
         
         return 0
 
-
     def getVideos(self, template=False):
         
         event = request.args.get('event') if request.args.get('event') is not None else None
