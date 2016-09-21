@@ -24,17 +24,17 @@ class Videos:
             videos = models.videosData.query.limit(int(count)).all()
 
         results = {}
-        if len(data) >= 1:            
-            for row, values in enumerate(data):
+        if ev:            
+            for row, values in enumerate(ev):
                 results[row] = {
-                    'id':values[0],
-                    'video_name':values[1],
-                    'type': values[2],
-                    'event_id':values[3],
-                    'event_name':values[4],
-                    'category':values[7],
-                    'date_added':self.date_handler(values[5]),
-                    'date_updated':self.date_handler(values[6])
+                    'id':values.id,
+                    'video_name':values.name,
+                    'type': values.type,
+                    'event_id':values.event_id,
+                    'event_name':values.event_name,
+                    'category':values.category,
+                    'date_added':self.date_handler(values.date_added),
+                    'date_updated':self.date_handler(values.date_updated)
                 }
         
         if template==True:

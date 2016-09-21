@@ -29,16 +29,16 @@ class Events:
             events = events.limit(int(count)).all()
 
         results = {}
-        if data is not None and len(data) >= 1:
-            for row, values in enumerate(data):
+        if events:
+            for row, values in enumerate(events):
                 results[row] = {
-                    'id':values[0],
-                    'name':values[1],
-                    'date':con.date_handler(values[2]),
-                    'venue':values[4],
-                    'type':values[5],
-                    'imagefilename':values[10],
-                    'videofilename':values[9]
+                    'id':values.event_id,
+                    'name':values.event_name,
+                    'date':values.date,
+                    'venue':values.venue_name,
+                    'type':values.type,
+                    #'imagefilename':values[10],
+                    #'videofilename':values[9]
                     }
 
         if category == 'hackneywicked':
