@@ -7,6 +7,12 @@ import time
 
 class Events:
 
+    def date_handler(self, obj):
+        if hasattr(obj, 'isoformat'):
+            return obj.isoformat()
+        else:
+            raise TypeError
+
     def getEvents(self):
         name = request.args.get('name') if request.args.get('name') is not None else None
         category = request.args.get('category') if request.args.get('category') is not None else None
@@ -38,7 +44,7 @@ class Events:
                     'imagefilename':values.image_name,
                     'id':values.event_id,
                     'name':values.event_name,
-                    #'date':values.date,
+                    'date':self.date_handler(values.date),
                     'venue':values.venue_name,
                     'type':values.type
                     }
