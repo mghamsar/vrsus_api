@@ -8,29 +8,29 @@ import time
 class Events:
 
     def getEvents(self):
-        # name = request.args.get('name') if request.args.get('name') is not None else None
-        # category = request.args.get('category') if request.args.get('category') is not None else None
-        # count = request.args.get('count') if request.args.get('count') is not None else None
-        # eventType = request.args.get('type') if request.args.get('type') is not None else None
-        # venue = request.args.get('venue') if request.args.get('venue') is not None else None
+        name = request.args.get('name') if request.args.get('name') is not None else None
+        category = request.args.get('category') if request.args.get('category') is not None else None
+        count = request.args.get('count') if request.args.get('count') is not None else None
+        eventType = request.args.get('type') if request.args.get('type') is not None else None
+        venue = request.args.get('venue') if request.args.get('venue') is not None else None
 
-        events = models.EventsData.query.all()
+        # events = models.EventsData.query.all()
 
-        # events = models.EventsData.query.join(models.VideosData, models.EventsData.event_id==models.VideosData.event_id,isouter=True).join(models.ImagesData,models.VideosData.video_id==models.ImagesData.video_id,isouter=True)
+        events = models.EventsData.query.join(models.VideosData, models.EventsData.event_id==models.VideosData.event_id,isouter=True).join(models.ImagesData,models.VideosData.video_id==models.ImagesData.video_id,isouter=True)
         
-        # if name is not None and category is not None:
-        #     events = events.filter_by(event_name=name,category=category)
-        # elif name is not None: 
-        #     events = events.filter_by(event_name=name)
-        # elif category is not None: 
-        #     events = events.filter_by(category=category)
-        # elif eventType is not None: 
-        #     events = events.filter_by(type=eventType)
+        if name is not None and category is not None:
+            events = events.filter_by(event_name=name,category=category)
+        elif name is not None: 
+            events = events.filter_by(event_name=name)
+        elif category is not None: 
+            events = events.filter_by(category=category)
+        elif eventType is not None: 
+            events = events.filter_by(type=eventType)
 
-        # if count is not None:
-        #     events = events.limit(int(count))
+        if count is not None:
+            events = events.limit(int(count))
 
-        # events = events.add_columns(models.VideosData.video_name,models.ImagesData.image_name, models.EventsData.event_id,models.EventsData.event_name,models.EventsData.date,models.EventsData.venue_name,models.EventsData.type)
+        events = events.add_columns(models.VideosData.video_name,models.ImagesData.image_name, models.EventsData.event_id,models.EventsData.event_name,models.EventsData.date,models.EventsData.venue_name,models.EventsData.type)
 
         results = {}
         if events is not None:
