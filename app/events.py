@@ -8,11 +8,11 @@ import time
 class Events:
 
     def getEvents(self):
-        name = request.args.get('name') if request.args.get('name') is not None else None
-        category = request.args.get('category') if request.args.get('category') is not None else None
-        count = request.args.get('count') if request.args.get('count') is not None else None
-        eventType = request.args.get('type') if request.args.get('type') is not None else None
-        venue = request.args.get('venue') if request.args.get('venue') is not None else None
+        # name = request.args.get('name') if request.args.get('name') is not None else None
+        # category = request.args.get('category') if request.args.get('category') is not None else None
+        # count = request.args.get('count') if request.args.get('count') is not None else None
+        # eventType = request.args.get('type') if request.args.get('type') is not None else None
+        # venue = request.args.get('venue') if request.args.get('venue') is not None else None
 
         events = models.EventsData.query.all()
 
@@ -33,23 +33,23 @@ class Events:
         # events = events.add_columns(models.VideosData.video_name,models.ImagesData.image_name, models.EventsData.event_id,models.EventsData.event_name,models.EventsData.date,models.EventsData.venue_name,models.EventsData.type)
 
         results = {}
-        if events:
+        if events is not None:
             for row, values in enumerate(events):
                 results[row] = {
                     #'videofilename':values.video_name,
                     #'imagefilename':values.image_name,
                     'id':values.event_id,
                     'name':values.event_name,
-                    'date':values.date,
+                    #'date':values.date,
                     'venue':values.venue_name,
                     'type':values.type
                     }
 
-        if category == 'hackneywicked':
-            return self.orderEvents(results)
+        # if category == 'hackneywicked':
+        #     return self.orderEvents(results)
 
-        else:
-            return jsonify(results)
+        # else:
+        return jsonify(results)
 
 
     def orderEvents(self,events):
