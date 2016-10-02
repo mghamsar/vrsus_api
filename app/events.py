@@ -37,7 +37,6 @@ class Events:
         results = {}
         if events:
             for row, values in enumerate(events):
-                print str(values)
                 results[row] = {
                     'videofilename':values.video_name,
                     'imagefilename':values.image_name,
