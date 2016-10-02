@@ -29,7 +29,7 @@ class Images:
         for row, value in enumerate(images):
             results[row] = {
                 'id':value.id,
-                'file_name':value.name,
+                'file_name':value.image_name,
                 'category':value.category
             }
 

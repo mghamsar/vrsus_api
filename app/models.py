@@ -6,7 +6,7 @@ class ImagesData(db.Model):
     __tablename__ = "images"
 
     id = db.Column(db.Integer, primary_key=True, unique=True)
-    name = db.Column(db.String(255), index=True, unique=True)
+    image_name = db.Column('name',db.String(255), index=True, unique=True)
     type = db.Column(db.String(255))
     event_id = db.Column(db.Integer,db.ForeignKey('events.event_id'))
     date_added = db.Column(db.DateTime,default=datetime.datetime.now())
@@ -63,8 +63,8 @@ class EventsData(db.Model):
 class VideosData(db.Model):
     __tablename__ = "videos"
 
-    id = db.Column(db.Integer, primary_key=True, unique=True)
-    name = db.Column(db.String(255), index=True, unique=True)
+    video_id = db.Column('id',db.Integer, primary_key=True, unique=True)
+    video_name = db.Column('name',db.String(255), index=True, unique=True)
     event_id = db.Column(db.Integer, unique=True)
     date_added = db.Column(db.DateTime,default=datetime.datetime.now())
     date_updated = db.Column(db.DateTime,default=datetime.datetime.now())
