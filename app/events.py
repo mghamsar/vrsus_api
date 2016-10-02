@@ -14,8 +14,6 @@ class Events:
         eventType = request.args.get('type') if request.args.get('type') is not None else None
         venue = request.args.get('venue') if request.args.get('venue') is not None else None
 
-        # events = models.EventsData.query.all()
-
         events = models.EventsData.query.join(models.VideosData, models.EventsData.event_id==models.VideosData.event_id,isouter=True).join(models.ImagesData,models.VideosData.video_id==models.ImagesData.video_id,isouter=True)
         
         if name is not None and category is not None:
@@ -36,8 +34,8 @@ class Events:
         if events is not None:
             for row, values in enumerate(events):
                 results[row] = {
-                    #'videofilename':values.video_name,
-                    #'imagefilename':values.image_name,
+                    'videofilename':values.video_name,
+                    'imagefilename':values.image_name,
                     'id':values.event_id,
                     'name':values.event_name,
                     #'date':values.date,
@@ -45,11 +43,11 @@ class Events:
                     'type':values.type
                     }
 
-        # if category == 'hackneywicked':
-        #     return self.orderEvents(results)
+        if category == 'hackneywicked':
+            return self.orderEvents(results)
 
-        # else:
-        return jsonify(results)
+        else:
+            return jsonify(results)
 
 
     def orderEvents(self,events):
