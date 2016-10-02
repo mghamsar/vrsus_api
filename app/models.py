@@ -12,7 +12,7 @@ class ImagesData(db.Model):
     date_added = db.Column(db.DateTime,default=datetime.datetime.now())
     date_updated = db.Column(db.DateTime,default=datetime.datetime.now())
     category = db.Column(db.String(255))
-    video_id = db.Column(db.Integer)
+    video_id = db.Column('video_id',db.Integer)
     position = db.Column(db.Integer, unique=True)
 
     def __init__(self, name, type=None, event_id=None,date_added=None,date_updated=None, category=None, video_id=None,position=None):
