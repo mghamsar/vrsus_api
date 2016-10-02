@@ -17,8 +17,7 @@ class Events:
        # events = models.EventsData.query.all()
        # events = db.session.query(models.EventsData).join(models.VideosData)
 
-        events = models.EventsData.query.join(models.VideosData, models.EventsData.event_id==models.VideosData.event_id,isouter=True)\
-        .join(models.ImagesData,models.VideosData.video_id==models.ImagesData.video_id,isouter=True)
+        events = models.EventsData.query.join(models.VideosData, models.EventsData.event_id==models.VideosData.event_id,isouter=True).join(models.ImagesData,models.VideosData.video_id==models.ImagesData.video_id,isouter=True)
         
         if name is not None and category is not None:
             events = events.filter_by(event_name=name,category=category)
@@ -37,6 +36,7 @@ class Events:
         results = {}
         if events:
             for row, values in enumerate(events):
+                print values
                 results[row] = {
                     'videofilename':values.video_name,
                     'imagefilename':values.image_name,
