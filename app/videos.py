@@ -7,28 +7,39 @@ import time, json
 
 class Videos:
 
+    def date_handler(self, obj):
+        if hasattr(obj, 'isoformat'):
+            return obj.isoformat()
+        else:
+            raise TypeError
+
     def getVideos(self, template=False):
         
         event = request.args.get('event') if request.args.get('event') is not None else None
         count = request.args.get('count') if request.args.get('count') is not None else None
         order = request.args.get('order') if request.args.get('order') is not None else None
+        category = request.args.get('category') if request.args.get('category') is not None else None
 
-        ev = models.EventsData.query.filter_by(event_name=event).first()
+        videos = models.VideosData.query
 
-        videos = models.VideosData.query.all()
-
-        if event is not None: 
-            videos = models.VideosData.query.filter_by(event_id=ev.event_id)
+        if event is not None:
+            ev = models.EventsData.query.filter_by(event_name=event).first()
+            if ev:
+                videos = videos.filter_by(event_id=ev.event_id)
+        if category is not None:
+            videos = videos.filter_by(category=category)
 
         if count is not None:
-            videos = models.videosData.query.limit(int(count)).all()
+            videos = videos.limit(int(count))
+
+        videos = videos.all()
 
         results = {}
-        if ev:            
-            for row, values in enumerate(ev):
+        if videos:            
+            for row, values in enumerate(videos):
                 results[row] = {
-                    'id':values.id,
-                    'video_name':values.name,
+                    'id':values.video_id,
+                    'video_name':values.video_name,
                     'type': values.type,
                     'event_id':values.event_id,
                     'event_name':values.event_name,
@@ -38,7 +49,7 @@ class Videos:
                 }
         
         if template==True:
-            return json.loads(json.dumps(results))#json.dumps(results, sort_keys=True,)
+            return json.loads(json.dumps(results))
 
         return jsonify(results)
 

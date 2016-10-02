@@ -66,15 +66,17 @@ class VideosData(db.Model):
     video_id = db.Column('id',db.Integer, primary_key=True, unique=True)
     video_name = db.Column('name',db.String(255), index=True, unique=True)
     event_id = db.Column(db.Integer, unique=True)
+    event_name = db.Column(db.String(255))
     date_added = db.Column(db.DateTime,default=datetime.datetime.now())
     date_updated = db.Column(db.DateTime,default=datetime.datetime.now())
     category = db.Column(db.String(255))
     type = db.Column(db.String(255))
 
-    def __init__(self, id, name,event_id=None,date_added=None,date_updated=None,category=None,type=None):
+    def __init__(self, id, name,event_id=None,event_name=None,date_added=None,date_updated=None,category=None,type=None):
         self.id = id
         self.name = name
         self.event_id = event_id if event_id is not None else None
+        self.event_name = event_name if event_name is not None else None
         self.date_added = date_added if date_added is not None else None
         self.date_updated = date_updated if date_updated is not None else None
         self.category = category if category is not None else None
