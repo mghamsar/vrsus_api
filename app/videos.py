@@ -73,7 +73,6 @@ class Videos:
         
         return "Video not found on server"
 
-
     def addVideo(self,videoname=None, eventname=None, venuename=None):
         s3 = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
         bucket = s3.get_bucket('vrsuscovideos')
@@ -117,7 +116,6 @@ class Videos:
             else:
                 return "Could not upload Video"
 
-
     def addVideoToDb(self, videoname, eventname=None, eventtype=None, eventcategory=None):
 
         now = time.strftime('%Y-%m-%d')
@@ -140,32 +138,24 @@ class Videos:
         db.session.add(img)
         db.session.commit()
 
+    def getCategories(self):
+                
+        data = db.session.query(models.VideosData.category.distinct().label("category")).all()
+        results = {}
+        if data:            
+            for row,value in enumerate(data):
+                results[row] = {
+                    'cat':str(value[0].encode("utf-8")),
+                }
+        return json.loads(json.dumps(results))
 
-    # def getCategories(self):
-    #     query = "SELECT DISTINCT category from videos;"
-    #     dbi = Db();
-    #     data = dbi.getQuery(query);
-
-    #     results = {}
-    #     if len(data) >= 1:            
-    #         for row, values in enumerate(data):
-    #             results[row] = {
-    #                 'cat':values[0],
-    #             }
+    def getTypes(self):
         
-    #     return json.loads(json.dumps(results))
-
-
-    # def getTypes(self):
-    #     query = "SELECT DISTINCT type from videos;"
-    #     dbi = Db();
-    #     data = dbi.getQuery(query);
-
-    #     results = {}
-    #     if len(data) >= 1:            
-    #         for row, values in enumerate(data):
-    #             results[row] = {
-    #                 'type':values[0],
-    #             }
-        
-    #     return json.loads(json.dumps(results))
+        data = db.session.query(models.VideosData.type.distinct().label("type")).all()
+        results = {}
+        if data:            
+            for row, value in enumerate(data):
+                results[row] = {
+                    'type':value[0].encode("utf-8"),
+                }
+        return json.loads(json.dumps(results))

@@ -9,9 +9,9 @@ from app import application
 def index1():
     v = videos.Videos()
     data = v.getVideos(template=True)
-    #categories = v.getCategories()
-    #types=v.getTypes()
-    return render_template('basic.html')#, videos = data, categories = categories, types=types)
+    categories = v.getCategories()
+    types = v.getTypes()
+    return render_template('basic.html', videos = data, categories = categories, types=types)
 
 @application.route('/download', methods=['POST'])
 def download():
