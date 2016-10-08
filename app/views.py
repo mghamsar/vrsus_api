@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, render_template, jsonify
 #from config import Config
 #import flask.json
-from app import images, events, videos
+from app import images, events, videos, audio
 from app import application
 
 @application.route("/")
@@ -57,20 +57,20 @@ def add_image():
     
 # #################---------------------###################
 
-# @app.route("/audio/", methods=['GET'])
-# def get_audiofilenames():
-#     aud = audio3d.Audio3D()
-#     return aud.showAudioData()
+@application.route("/audio/", methods=['GET'])
+def get_audiofilenames():
+    aud = audio.Audio()
+    return aud.showAudioData()
 
-# @app.route('/audio/load/<audiofilename>', methods=['GET'])
-# def load_audio(audiofilename):
-#     aud = audio3d.Audio3D()
-#     return aud.loadAudio(audiofilename)
+@application.route('/audio/load/<audiofilename>', methods=['GET'])
+def load_audio(audiofilename):
+    aud = audio.Audio()
+    return aud.loadAudio(audiofilename)
 
-# @app.route("/audio/upload", methods=['POST'])
-# def add_audio():
-#     aud = audio3d.Audio3D()
-#     return aud.addAudio()
+@application.route("/audio/upload", methods=['POST'])
+def add_audio():
+    aud = audio.Audio()
+    return aud.addAudio()
 
 # ##################-------------------------###################
 
