@@ -45,8 +45,7 @@ class EventsData(db.Model):
     date_updated = db.Column(db.DateTime,default=datetime.datetime.now())
     category = db.Column(db.String(255))
 
-    def __init__(self, event_id, event_name,date=None,venue_id=None,venue_name=None,type=None,date_added=None,date_updated=None,category=None):
-        self.event_id = event_id
+    def __init__(self, event_name,date=None,venue_id=None,venue_name=None,type=None,date_added=None,date_updated=None,category=None):
         self.event_name = event_name
         self.date = date if date is not None else None
         self.venue_id = venue_id if venue_id is not None else None
@@ -72,9 +71,8 @@ class VideosData(db.Model):
     category = db.Column(db.String(255))
     type = db.Column(db.String(255))
 
-    def __init__(self, id, name,event_id=None,event_name=None,date_added=None,date_updated=None,category=None,type=None):
-        self.id = id
-        self.name = name
+    def __init__(self, name,event_id=None,event_name=None,date_added=None,date_updated=None,category=None,type=None):
+        self.video_name = name
         self.event_id = event_id if event_id is not None else None
         self.event_name = event_name if event_name is not None else None
         self.date_added = date_added if date_added is not None else None

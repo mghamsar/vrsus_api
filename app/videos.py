@@ -1,9 +1,9 @@
 from app import models,db
 from flask import request, jsonify, redirect, url_for
-
+from boto.s3.key import Key
 import boto, boto.s3.connection
 import config
-import time, json
+import time, json, os
 
 class Videos:
 
@@ -54,7 +54,7 @@ class Videos:
         return jsonify(results)
 
     def getVideo(self, videoname):
-        s3 = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
+        s3 = boto.connect_s3(aws_access_key_id = config.S3_ACCESS_KEY, aws_secret_access_key = config.S3_SECRET_KEY)
         bucket = s3.get_bucket('vrsuscovideos')
         key = boto.s3.key.Key(bucket)
         videoname = videoname.lower()
@@ -74,7 +74,7 @@ class Videos:
         return "Video not found on server"
 
     def addVideo(self,videoname=None, eventname=None, venuename=None):
-        s3 = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
+        s3 = boto.connect_s3(aws_access_key_id = config.S3_ACCESS_KEY, aws_secret_access_key = config.S3_SECRET_KEY)
         bucket = s3.get_bucket('vrsuscovideos')
         k = Key(bucket)
 
@@ -119,23 +119,37 @@ class Videos:
     def addVideoToDb(self, videoname, eventname=None, eventtype=None, eventcategory=None):
 
         now = time.strftime('%Y-%m-%d')
-        video = models.VideosData.query.filter_by(name=videoname).first()
+        video = models.VideosData.query.filter_by(video_name=videoname).first()
 
-        if video is not None and videoname == video.name:
+        if video is not None and videoname == video.video_name:
             if eventname is not None:
                 ev = models.EventsData.query.filter_by(event_name=eventname).first()
-                if ev.event_id is not None:
+                if ev is not None:
                     video.event_id = ev.event_id
+                    video.event_name = ev.event_name
+                else:
+                    ev2 = models.EventsData(eventname, date_added=now, date_updated=now)
+                    db.session.add(ev2)
+                    db.session.commit()
+                    ev2 = models.EventsData.query.filter_by(event_name=eventname).first()
+                    video = models.VideosData(videoname, event_id=ev2.event_id, event_name=ev2.event_name, type=eventtype, category=eventcategory, date_added=now, date_updated=now)
+
         else:
             if eventname is not None:
                 ev = models.EventsData.query.filter_by(event_name=eventname).first()
-                video = models.VideosData(videoname, event_id=ev.event_id, date_added=now, date_updated=now)
-
+                if ev is not None: 
+                    video = models.VideosData(videoname, event_id=ev.event_id, event_name=ev.event_name, type=eventtype, category=eventcategory, date_added=now, date_updated=now)
+                else: 
+                    ev2 = models.EventsData(eventname, date_added=now, date_updated=now)
+                    db.session.add(ev2)
+                    db.session.commit()
+                    ev2 = models.EventsData.query.filter_by(event_name=eventname).first()
+                    video = models.VideosData(videoname, event_id=ev2.event_id, event_name=ev2.event_name, type=eventtype, category=eventcategory, date_added=now, date_updated=now)
             else: 
                 print "No event name"
                 video = models.VideosData(videoname, date_added=now, date_updated=now)
 
-        db.session.add(img)
+        db.session.add(video)
         db.session.commit()
 
     def getCategories(self):

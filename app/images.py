@@ -42,7 +42,7 @@ class Images:
         url = "http://d396uhl77uxno9.cloudfront.net"+"/"+filename 
         return redirect(url, code=302)
         
-        # conn = boto.connect_s3(aws_access_key_id = Config.S3_ACCESS_KEY, aws_secret_access_key = Config.S3_SECRET_KEY)
+        # conn = boto.connect_s3(aws_access_key_id = config.S3_ACCESS_KEY, aws_secret_access_key = config.S3_SECRET_KEY)
         # bucket = conn.get_bucket('vrsusimages', validate=False)
         # key = boto.s3.key.Key(bucket)
         # filename = filename.lower()
@@ -57,7 +57,7 @@ class Images:
         #     return Response(e.body, status=e.status, headers=key.resp.getheaders())
 
     def addImage(self,imagename=None, eventname=None, venuename=None):
-        s3 = boto.connect_s3(aws_access_key_id = config.Config.S3_ACCESS_KEY, aws_secret_access_key = config.Config.S3_SECRET_KEY)
+        s3 = boto.connect_s3(aws_access_key_id = config.S3_ACCESS_KEY, aws_secret_access_key = config.S3_SECRET_KEY)
         bucket = s3.get_bucket('vrsusimages', validate=False)
         k = boto.s3.key.Key(bucket)
 
