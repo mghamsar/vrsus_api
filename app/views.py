@@ -27,7 +27,7 @@ def get_videos():
 
 @application.route("/videos/load/<videoname>", methods=['GET'])
 def get_video(videoname):
-    v = videos.V
+    v = videos.Videos()
     return v.getVideo(videoname)
 
 @application.route("/videos/upload", methods=['POST'])

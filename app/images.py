@@ -1,5 +1,5 @@
 from app import models,db
-from flask import request, jsonify, redirect, url_for
+from flask import request, jsonify, redirect, url_for, Response
 
 import boto, boto.s3.connection
 import config
@@ -39,22 +39,27 @@ class Images:
     def loadImage(self, filename):
 
         # Call CloudFront Endpoint
-        url = "http://d396uhl77uxno9.cloudfront.net"+"/"+filename 
-        return redirect(url, code=302)
+        # url = "http://d396uhl77uxno9.cloudfront.net"+"/"+filename 
+        # return redirect(url, code=302)
+        conn = boto.connect_s3(aws_access_key_id = config.S3_ACCESS_KEY, aws_secret_access_key = config.S3_SECRET_KEY)
+        bucket = conn.get_bucket('vrsusimages', validate=False)
+        key = boto.s3.key.Key(bucket)
+        filename = filename.lower()
         
-        # conn = boto.connect_s3(aws_access_key_id = config.S3_ACCESS_KEY, aws_secret_access_key = config.S3_SECRET_KEY)
-        # bucket = conn.get_bucket('vrsusimages', validate=False)
-        # key = boto.s3.key.Key(bucket)
-        # filename = filename.lower()
-        # key.key = filename
-        # try:
-        #     key.open_read()
-        #     headers = dict(key.resp.getheaders())
-        #     if headers['content-type'] is not 'image/jpeg': 
-        #         headers['content-type'] = 'image/jpeg'
-        #     return Response(key, headers=headers)
-        # except boto.exception.S3ResponseError as e:
-        #     return Response(e.body, status=e.status, headers=key.resp.getheaders())
+        for i, key in enumerate(bucket.list()):
+            if key.name == filename:
+                key.key = filename
+                
+                try:
+                    key.open_read()
+                    headers = dict(key.resp.getheaders())
+                    if headers['content-type'] is not 'image/jpeg': 
+                        headers['content-type'] = 'image/jpeg'
+                    return Response(key, headers=headers)
+                except boto.exception.S3ResponseError as e:
+                    return Response(e.body, status=e.status, headers=key.resp.getheaders())
+
+        return "Image not found on server"
 
     def addImage(self,imagename=None, eventname=None, venuename=None):
         s3 = boto.connect_s3(aws_access_key_id = config.S3_ACCESS_KEY, aws_secret_access_key = config.S3_SECRET_KEY)
