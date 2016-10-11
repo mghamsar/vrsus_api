@@ -21,15 +21,15 @@ class Events:
         venue = request.args.get('venue') if request.args.get('venue') is not None else None
 
         events = models.EventsData.query.join(models.VideosData, models.EventsData.event_id==models.VideosData.event_id,isouter=True).join(models.ImagesData,models.VideosData.video_id==models.ImagesData.video_id,isouter=True)
-        
+
         if name is not None and category is not None:
-            events = events.filter_by(event_name=name,category=category)
+            events = events.filter(models.EventsData.event_name==name,models.EventsData.category==category)
         elif name is not None: 
-            events = events.filter_by(event_name=name)
+            events = events.filter(models.EventsData.event_name==name)
         elif category is not None: 
-            events = events.filter_by(category=category)
+            events = events.filter(models.EventsData.category==category)
         elif eventType is not None: 
-            events = events.filter_by(type=eventType)
+            events = events.filter(models.EventsData.type==eventType)
 
         if count is not None:
             events = events.limit(int(count))
