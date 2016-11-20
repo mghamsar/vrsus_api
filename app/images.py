@@ -102,13 +102,6 @@ class Images:
                 ev = models.EventsData.query.filter_by(event_name=eventname).first()
                 if ev.event_id is not None: 
                     img.event_id = ev.event_id
-            
-            if video_id is not None: 
-                img.video_id=video_id
-            if category is not None: 
-                img.category=category
-            if type is not None: 
-                img.type=type
 
         else:
             print "img not found", imagename
@@ -118,6 +111,13 @@ class Images:
             else: 
                 print "No event name provided"
                 img = models.ImagesData(imagename, video_id=video_id, date_added=now, date_updated=now)
+
+        if video_id is not None: 
+            img.video_id=video_id
+        if category is not None: 
+            img.category=category
+        if type is not None: 
+            img.type=type
 
         db.session.add(img)
         db.session.commit()

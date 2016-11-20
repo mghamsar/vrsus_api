@@ -53,7 +53,11 @@ def load_image(imagename):
 @application.route("/images/upload", methods=['POST'])
 def add_image():
     img = images.Images()
-    return img.addImage()
+    image_files = request.files.getlist('image[]')
+    imagename = request.form['image_name'] if request.form['image_name'] is not None else None
+    category = request.form['image_category'] if request.form['image_category'] is not None else None
+
+    return img.addImage(image_files,imagename,category=category)
     
 # #################---------------------###################
 

@@ -99,7 +99,6 @@ class Videos:
         else: 
             img.addImage(image_files,imagename,eventname=eventname,category=eventcategory,type=eventtype)
 
-
         # UPDATE Audio DB and Storage
         aud = audio.Audio()
         # aud.addAudio(audio_files,audioname,eventname,eventtype,eventcategory)
