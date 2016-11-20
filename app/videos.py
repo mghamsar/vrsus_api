@@ -1,4 +1,4 @@
-from app import models,db
+from app import models,db,images, audio
 from flask import request, jsonify, redirect, url_for, Response
 from boto.s3.key import Key
 import boto, boto.s3.connection
@@ -73,32 +73,60 @@ class Videos:
         
         return "Video not found on server"
 
-    def addVideo(self,videoname=None, eventname=None, venuename=None):
-        s3 = boto.connect_s3(aws_access_key_id = config.S3_ACCESS_KEY, aws_secret_access_key = config.S3_SECRET_KEY)
-        bucket = s3.get_bucket('vrsuscovideos')
-        k = Key(bucket)
+    #def videoStream(self, video):
+        
 
-        # Loop over the list of files from the HTML input control
-        data_files = request.files.getlist('file[]')
+    def addVideo(self):
+        
+        video_files = request.files.getlist('video[]')
+        audio_files = request.files.getlist('audio[]')
+        image_files = request.files.getlist('image[]')
         videoname = request.form['video_name'] if request.form['video_name'] is not None else None
+        imagename = request.form['image_name'] if request.form['image_name'] is not None else None
+        audioname = request.form['audio_name'] if request.form['audio_name'] is not None else None
         eventname = request.form['event_name'] if request.form['event_name'] is not None else None
         eventtype = request.form['event_type'] if request.form['event_type'] is not None else None
         eventcategory = request.form["event_category"] if request.form["event_category"] is not None else None
 
-        for data_file in data_files:
+        self.addVideotoStorage(video_files,videoname,eventname,eventtype,eventcategory)
 
+        # Update images DB and Storage
+        img = images.Images()
+        v = models.VideosData.query.filter_by(video_name=videoname).first()
+        if v is not None: 
+            print v.video_id
+            img.addImage(image_files,imagename,video_id=v.video_id,eventname=eventname,category=eventcategory,type=eventtype)
+        else: 
+            img.addImage(image_files,imagename,eventname=eventname,category=eventcategory,type=eventtype)
+
+
+        # UPDATE Audio DB and Storage
+        aud = audio.Audio()
+        # aud.addAudio(audio_files,audioname,eventname,eventtype,eventcategory)
+
+        return redirect(url_for('.get_videos'))
+            
+
+    def addVideotoStorage(self,video_files, videoname=None, eventname=None, eventtype=None, eventcategory=None):
+
+        s3 = boto.connect_s3(aws_access_key_id = config.S3_ACCESS_KEY, aws_secret_access_key = config.S3_SECRET_KEY)
+        bucket = s3.get_bucket('vrsuscovideos')
+        k = Key(bucket)
+
+        for video_file in video_files:
+            print video_file
             # Read the contents of the file
-            file_contents = data_file.read()
+            file_contents = video_file.read()
             
             try:
-                size = os.fstat(data_file.fileno()).st_size
+                size = os.fstat(video_file.fileno()).st_size
             except:
                 # Not all file objects implement fileno(), so we fall back on this
-                data_file.seek(0, os.SEEK_END)
-                size = data_file.tell()
+                video_file.seek(0, os.SEEK_END)
+                size = video_file.tell()
 
             if videoname is None:
-                videoname = data_file.filename
+                videoname = video_file.filename
 
             videoname = videoname.lower()
             videoname = videoname.replace(" ","_")
