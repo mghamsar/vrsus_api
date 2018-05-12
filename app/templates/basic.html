@@ -1,0 +1,120 @@
+<!doctype html>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<style type="text/css">
+
+.videosection {
+    background-color: #ccffcc;
+}
+
+.audiosection {
+    background-color: #ff8080;
+}
+
+#type {
+    float: left;
+    width: 20%;
+}
+
+</style>
+
+<h3>Welcome to the vrsus api</h3> 
+<h2> Get a Video </h2> 
+<form action="download" method="post">
+	Video Name: <input type="text" name="video_name"><br>
+	<input type="submit" value="Submit">
+</form>
+
+<hr>
+
+<section class="videosection">
+<h2> Add a new Video for an Event </h2> 
+<form action="videos/upload" method="post" enctype="multipart/form-data">
+
+    Event Name: <input type="text" name="event_name" required></br>
+    
+    <p> Video Name</p>
+    <input type="text" name="video_name" required></br>
+    <input type="file" name="video[]" multiple></br>
+
+    <p> Audio Upload </p> 
+    <input type="text" name="audio_name"></br> 
+    <input type="file" name="audio[]" multiple></br>
+
+    <p> Image Upload (including extention like .jpg): </p>
+    <input type="text" name="image_name"></br>
+    <input type="file" name="image[]" multiple></br>
+
+    <div id="type" class="dropdown">
+        <h4> Type: </h4>
+        <select name="event_type" id="types_dropdown" class="dropdown-content" onchange="typeVal()">
+            {% for message in types %}
+                <option value={{ types[message]['type'] }}>{{ types[message]['type']}}</option>-->
+            {% endfor %}
+        </select>
+        <input style="width:100px; float:left;" type="text" name="event_type2" id="event_type2" required></br>
+    </div>
+    
+    <div id="category" class="dropdown">
+        <h4> Category: </h4>
+        <select name="event_category" id="categories_dropdown" class="dropdown-content" onchange="sel()">
+            {% for message in categories %}
+                <option value={{ categories[message]['cat'] }}>{{ categories[message]['cat']}}</option>-->
+            {% endfor %}
+        </select>
+        <input style="width:100px; float:left;" type="text" name="event_category2" id="event_category2" required></br>
+    </div></br>
+
+    <h4> SUBMIT EVENT VIDEO AND ASSOCIATED AUDIO AND IMAGES </h4>
+    <input type="submit" value="SUBMIT" width="48" height="48">
+</form>
+</section>
+
+<h2> Add Other Images (For example band photos, etc) </h2> 
+<form action="images/upload" method="post" enctype="multipart/form-data">
+    Image File Name (including extention like .jpg): <input type="text" name="image_name"></br>
+    <div id="category" class="dropdown">
+        <h4> Category: </h4>
+        <select name="image_category" id="categories_dropdown" class="dropdown-content" onchange="sel()">
+            {% for message in categories %}
+                <option value={{ categories[message]['cat'] }}>{{ categories[message]['cat']}}</option>-->
+            {% endfor %}
+        </select>
+        <input style="width:100px; float:left;" type="text" name="image_category2" id="image_category2" required></br>
+    </div>
+    <br>
+    <input type="file" name="image[]" multiple></br>
+    <input type="submit">
+</form>
+</br>
+
+<section class="videosection">
+    <h1> Delete A Video </h1>   
+    <form action="videos/delete">
+        <p>Video to Delete</p>
+        <input type="text" name="video_to_delete"><br>
+        <input type="submit">
+    </form>
+</section> 
+
+<script type="text/javascript">
+    function typeToggle(){
+        document.getElementById("types_dropdown").classList.toggle("show");
+    }
+
+    function typeVal(){
+        e = document.getElementById("types_dropdown")
+        document.getElementById("event_type2").value = e.options[e.selectedIndex].value;;
+    }
+
+    function myFunction(){
+        document.getElementById("categories_dropdown").classList.toggle("show");
+    }
+
+    function sel(){
+        e = document.getElementById("categories_dropdown")
+        document.getElementById("event_category2").value = e.options[e.selectedIndex].value;;
+    }
+</script>
+
